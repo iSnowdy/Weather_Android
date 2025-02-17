@@ -1,19 +1,21 @@
 package Database.Local.Entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "weather_hourly")
 public class WeatherHourlyEntity {
     @PrimaryKey(autoGenerate = false)
-    private int cityID;
+    @NonNull
+    private String cityName;
     private long timestamp;
     private double temperature;
     private int humidity;
     private String weatherDescription;
 
-    public WeatherHourlyEntity(int cityID, long timestamp, double temperature, int humidity, String weatherDescription) {
-        this.cityID = cityID;
+    public WeatherHourlyEntity(String cityName, long timestamp, double temperature, int humidity, String weatherDescription) {
+        this.cityName = cityName;
         this.timestamp = timestamp;
         this.temperature = temperature;
         this.humidity = humidity;
@@ -21,8 +23,8 @@ public class WeatherHourlyEntity {
     }
 
     // Getters y Setters
-    public int getCityID() { return cityID; }
-    public void setCityID(int cityID) { this.cityID = cityID; }
+    public String getCityName() { return cityName; }
+    public void setCityName(String cityName) { this.cityName = cityName; }
 
     public long getTimestamp() { return timestamp; }
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }

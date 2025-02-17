@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import Database.Local.DatabaseManager;
 import Database.Local.Entity.WeatherCurrentEntity;
 import Database.Local.WeatherDAO;
-import Database.Remote.ApiClient;
+import Database.Remote.WeatherApiClient;
 import Database.Remote.WeatherService;
 import Domain.Models.WeatherResponse;
 import retrofit2.Call;
@@ -24,11 +24,11 @@ public class WeatherRepository {
     public WeatherRepository(Context context) {
         DatabaseManager db = DatabaseManager.getInstance(context);
         this.weatherDAO = db.weatherDAO();
-        this.weatherService = ApiClient.getRetrofit().create(WeatherService.class);
+        this.weatherService = WeatherApiClient.getRetrofit().create(WeatherService.class);
         //this.WEATHER_APP_STRING = context.getString(R.string.WEATHER_APP_STRING);
     }
 
-    public LiveData<WeatherResponse> getWeather(int cityID, double latitude, double longitude) {
+    public LiveData<WeatherResponse> getWeather(String cityName, double latitude, double longitude) {
         MutableLiveData<WeatherResponse> weatherMutableLiveData = new MutableLiveData<>();
 
         weatherService.getWeather(latitude, longitude, WEATHER_APP_STRING, UNITS).enqueue(new Callback<WeatherResponse>() {
@@ -39,18 +39,14 @@ public class WeatherRepository {
                     weatherMutableLiveData.postValue(weatherResponse);
 
                     WeatherCurrentEntity weatherCurrentEntity = new WeatherCurrentEntity(
-                            cityID,
+                            cityName,
                             (float) weatherResponse.current.temperature,
                             (float) weatherResponse.current.feelsLike,
-                            weatherResponse.current.pressure,
                             weatherResponse.current.humidity,
-                            weatherResponse.current.uvi,
-                            weatherResponse.current.visibility,
                             (float) weatherResponse.current.windSpeed,
-                            weatherResponse.current.windDeg,
                             weatherResponse.current.weatherConditions.get(0).description,
                             weatherResponse.current.weatherConditions.get(0).icon,
-                            System.currentTimeMillis()
+                            weatherResponse.current.timestamp
                     );
 
                     // Store the weather data in the local database in the background
@@ -67,10 +63,10 @@ public class WeatherRepository {
         return weatherMutableLiveData;
     }
 
-    public LiveData<WeatherCurrentEntity> getLatestWeatherForCity(int cityID) {
+    public LiveData<WeatherCurrentEntity> getLatestWeatherForCity(String cityName) {
         MutableLiveData<WeatherCurrentEntity> weatherMutableLiveData = new MutableLiveData<>();
         new Thread(() -> {
-            WeatherCurrentEntity weather = weatherDAO.getLatestWeatherForCity(cityID);
+            WeatherCurrentEntity weather = weatherDAO.getLatestWeatherForCity(cityName);
             weatherMutableLiveData.postValue(weather);
         }).start();
         return weatherMutableLiveData;

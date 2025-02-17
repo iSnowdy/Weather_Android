@@ -1,10 +1,13 @@
 package Database.Local.Entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 // Represents "current" weather in the JSON file
 // TODO: Make it so that it has a historic, but delete it once x amount of time has passed
+// TODO: Method to parse weatherIcon String to my own icon
+// TODO: Weather description is in all lower case. Need to capitalize it
 
 @Entity(tableName = "weather_current")
 public class WeatherCurrentEntity {
@@ -12,34 +15,28 @@ public class WeatherCurrentEntity {
     // Also, when setting it to false we will be replacing the old weather with the new one
     // If I did not do this, the DB would increase in size very fast
     @PrimaryKey(autoGenerate = false)
-    private Integer cityID;
+    @NonNull
+    private String cityName;
     private float temperature;
     private float feelsLike;
-    private int pressure;
     private int humidity;
-    private double uvi;
-    private int visibility;
     private float windSpeed;
-    private int windDeg;
     private String weatherDescription;
     private String weatherIcon;
     private long lastUpdated;
 
 
-    public WeatherCurrentEntity(final Integer cityID, float temperature, float feelsLike,
-                                int pressure, int humidity, double uvi, int visibility,
-                                float windSpeed, int windDeg, String weatherDescription,
+    public WeatherCurrentEntity(final String cityName, float temperature,
+                                float feelsLike, int humidity,
+                                float windSpeed, String weatherDescription,
                                 String weatherIcon, long lastUpdated) {
-        this.cityID = cityID;
+        this.cityName = cityName;
         this.temperature = temperature;
         this.feelsLike = feelsLike;
-        this.pressure = pressure;
         this.humidity = humidity;
-        this.uvi = uvi;
-        this.visibility = visibility;
         this.windSpeed = windSpeed;
-        this.windDeg = windDeg;
-        this.weatherDescription = weatherDescription;
+        this.weatherDescription =
+                weatherDescription.substring(0, 1).toUpperCase() + weatherDescription.substring(1);
         this.weatherIcon = weatherIcon;
         this.lastUpdated = lastUpdated;
     }
@@ -47,15 +44,11 @@ public class WeatherCurrentEntity {
     @Override
     public String toString() {
         return "\n-------------Weather Information-------------" +
-                "\nCity ID: " + cityID +
+                "\nCity: " + cityName +
                 "\nTemperature: " + temperature + "°C" +
                 "\nFeels Like: " + feelsLike + "°C" +
-                "\nPressure: " + pressure + " hPa" +
                 "\nHumidity: " + humidity + "%" +
-                "\nUV Index: " + uvi +
-                "\nVisibility: " + visibility + " m" +
                 "\nWind Speed: " + windSpeed + " m/s" +
-                "\nWind Direction: " + windDeg + "°" +
                 "\nWeather Description: " + weatherDescription +
                 "\nWeather Icon: " + weatherIcon +
                 "\nLast Updated: " + lastUpdated +
@@ -63,12 +56,12 @@ public class WeatherCurrentEntity {
     }
 
     // Getters y Setters
-    public Integer getCityID() {
-        return cityID;
+    public String getCityName() {
+        return cityName;
     }
 
-    public void setCityID(Integer cityID) {
-        this.cityID = cityID;
+    public void setCityID(String cityName) {
+        this.cityName = cityName;
     }
 
     public float getTemperature() {
@@ -87,14 +80,6 @@ public class WeatherCurrentEntity {
         this.feelsLike = feelsLike;
     }
 
-    public int getPressure() {
-        return pressure;
-    }
-
-    public void setPressure(int pressure) {
-        this.pressure = pressure;
-    }
-
     public int getHumidity() {
         return humidity;
     }
@@ -103,36 +88,12 @@ public class WeatherCurrentEntity {
         this.humidity = humidity;
     }
 
-    public double getUvi() {
-        return uvi;
-    }
-
-    public void setUvi(double uvi) {
-        this.uvi = uvi;
-    }
-
-    public int getVisibility() {
-        return visibility;
-    }
-
-    public void setVisibility(int visibility) {
-        this.visibility = visibility;
-    }
-
     public float getWindSpeed() {
         return windSpeed;
     }
 
     public void setWindSpeed(float windSpeed) {
         this.windSpeed = windSpeed;
-    }
-
-    public int getWindDeg() {
-        return windDeg;
-    }
-
-    public void setWindDeg(int windDeg) {
-        this.windDeg = windDeg;
     }
 
     public String getWeatherDescription() {

@@ -16,7 +16,7 @@ will handle the communication and convert the response to a Java object.
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ApiClient {
+public class WeatherApiClient {
     private static final String BASE_API_URL = "https://api.openweathermap.org/data/3.0/";
     private static Retrofit retrofit = null;
 
