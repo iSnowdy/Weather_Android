@@ -4,6 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 // Represents "current" weather in the JSON file
+// TODO: Make it so that it has a historic, but delete it once x amount of time has passed
 
 @Entity(tableName = "weather_current")
 public class WeatherCurrentEntity {

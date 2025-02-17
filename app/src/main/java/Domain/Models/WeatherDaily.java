@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+// I will need: dt | temp.min | temp.max | weather.icon
+
 public class WeatherDaily {
     @SerializedName("dt")
     public long timestamp;

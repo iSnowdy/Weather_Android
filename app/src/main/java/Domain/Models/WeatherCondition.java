@@ -2,6 +2,9 @@ package Domain.Models;
 
 import com.google.gson.annotations.SerializedName;
 
+// Will need: description | icon
+// Parse icon symbology to mine (https://openweathermap.org/weather-conditions#How-to-get-icon-URL)
+
 public class WeatherCondition {
     @SerializedName("id")
     public int id;
