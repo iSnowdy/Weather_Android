@@ -20,10 +20,11 @@ import com.example.weebther.R;
 import com.example.weebther.UI.Adapters.CityAdapter;
 import com.example.weebther.UI.ViewModels.WeatherViewModel;
 
+import java.util.ArrayList;
+
 public class CityListFragment extends Fragment {
     private WeatherViewModel weatherViewModel;
     private RecyclerView recyclerView;
-    private CityAdapter cityAdapter;
     private SearchView searchView;
 
     @Override
@@ -33,7 +34,37 @@ public class CityListFragment extends Fragment {
         searchView = view.findViewById(R.id.searchView);
         recyclerView = view.findViewById(R.id.citiesRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerView.setHasFixedSize(true);
 
+        setUpRecyclerView();
+        setUpSearchView();
+
+        return view;
+    }
+
+    // Creates the RecyclerView Adapter empty and adds the Callback function openWeatherDetails().
+    // It represents a function that will be executed everytime a city is clicked inside the
+    // RecyclerView.
+    private void setUpRecyclerView() {
+        CityAdapter cityAdapter = new CityAdapter(new ArrayList<>(), city -> openWeatherDetails(city));
+        recyclerView.setAdapter(cityAdapter);
+
+        weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
+        // Remove observers to avoid duplicate calls
+        weatherViewModel.getCitiesLiveData().removeObservers(getViewLifecycleOwner());
+        // TODO: Need to notify the adapter that the data has changed
+        weatherViewModel.getCitiesLiveData().observe(getViewLifecycleOwner(), cities -> {
+            cityAdapter.updateCitiesData(cities);
+        });
+    }
+
+    private void openWeatherDetails(City city) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("city", city);
+        Navigation.findNavController(requireView()).navigate(R.id.action_cityListFragment_to_weatherDetailsFragment, bundle);
+    }
+
+    private void setUpSearchView() {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -47,43 +78,33 @@ public class CityListFragment extends Fragment {
                 return false;
             }
         });
-
-        weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
-        weatherViewModel.getCitiesLiveData().observe(getViewLifecycleOwner(), cities -> {
-            cityAdapter = new CityAdapter(cities, city -> openWeatherDetails(city));
-            recyclerView.setAdapter(cityAdapter);
-        });
-
-        return view;
     }
 
     private void searchCity(String cityName) {
         weatherViewModel.fetchCoordinates(cityName);
 
         weatherViewModel.getLatitude().observe(getViewLifecycleOwner(), latitude -> {
-            if (latitude != null && weatherViewModel.getLongitude().getValue() != null) {
-                double longitude = weatherViewModel.getLongitude().getValue();
+            Double longitude = weatherViewModel.getLongitude().getValue();
+            if (latitude != null && longitude != null) {
+
+                Log.d("CityListFragment", "Latitude: " + latitude + " | Longitude: " + longitude);
+
                 City city = new City(cityName.hashCode(), cityName, "Country Name");
+
+                Log.d("CityListFragment", "City created: " + city);
+
                 weatherViewModel.addCity(city);
                 // Now that we have a City object, we can fetch the weather
                 weatherViewModel.fetchWeather(cityName, latitude, longitude);
             }
-            weatherViewModel.getLongitude().observe(getViewLifecycleOwner(), longitude -> {
-                weatherViewModel.fetchWeather(cityName, latitude, longitude);
-            });
         });
 
         weatherViewModel.getError().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
                 // Handle the error?
+                Log.e("CityListFragment", "Error: " + error.getMessage());
                 Toast.makeText(requireContext(), "City not found!", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void openWeatherDetails(City city) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("city", city);
-        Navigation.findNavController(requireView()).navigate(R.id.action_cityListFragment_to_weatherDetailsFragment, bundle);
     }
 }

@@ -37,6 +37,4 @@ public abstract class DatabaseManager extends RoomDatabase {
         }
         return databaseInstance;
     }
-
-
 }

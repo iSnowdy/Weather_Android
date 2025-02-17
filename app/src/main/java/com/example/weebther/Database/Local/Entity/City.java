@@ -21,7 +21,6 @@ public class City implements Serializable {
     }
 
 
-
     @Override
     public String toString() {
         return  "\n-------------City Information-------------" +

@@ -26,4 +26,6 @@ public interface CityDAO {
     City getCity(Integer id);
     @Query("SELECT * FROM cities")
     List<City> getCities();
+
+    // TODO: Testing methods. Remove later on. SELECT * from all entities
 }

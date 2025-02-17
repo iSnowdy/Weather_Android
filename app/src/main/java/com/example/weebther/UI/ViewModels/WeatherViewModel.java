@@ -1,6 +1,8 @@
 package com.example.weebther.UI.ViewModels;
 
 import android.app.Application;
+import android.util.Log;
+
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -26,7 +28,7 @@ and not affect the UI.
 public class WeatherViewModel extends AndroidViewModel {
     private final GeoCodingRepository geocodingRepository;
     private final WeatherRepository weatherRepository;
-
+    // TODO: Consider also adding a LiveData for cities
     private final MutableLiveData<Double> latitude = new MutableLiveData<>();
     private final MutableLiveData<Double> longitude = new MutableLiveData<>();
     private final MutableLiveData<GeoLocatorException> error = new MutableLiveData<>();
@@ -72,7 +74,11 @@ public class WeatherViewModel extends AndroidViewModel {
 
     // Obtains weather conditions from the API
     public void fetchWeather(String cityName, double latitude, double longitude) {
-        weatherRepository.getWeather(cityName, latitude, longitude).observeForever(weatherMutableLiveData::setValue);
+        if (weatherMutableLiveData.getValue() == null) {
+            weatherRepository.getWeather(cityName, latitude, longitude).observeForever(weatherMutableLiveData::setValue);
+        } else {
+            Log.d("WeatherViewModel", "Weather already fetched for city: " + cityName);
+        }
     }
 
     // Shows the LiveData to the UI so it can observe the changes in the weather

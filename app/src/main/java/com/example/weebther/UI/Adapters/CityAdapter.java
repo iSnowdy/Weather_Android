@@ -48,11 +48,18 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
         holder.cityNameTextView.setText(city.getName());
         // On click event for every city displayed
         holder.itemView.setOnClickListener(v -> onCityClickListener.onCityClick(city));
+        // TODO: Modify the body of the onCityClick listener later on
     }
 
     @Override
     public int getItemCount() {
         return cityList.size();
+    }
+
+    public void updateCitiesData(List<City> cities) {
+        cityList.clear();
+        cityList.addAll(cities);
+        notifyDataSetChanged();
     }
 
 
@@ -64,5 +71,4 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
             cityNameTextView = itemView.findViewById(R.id.cityNameTextView);
         }
     }
-
 }

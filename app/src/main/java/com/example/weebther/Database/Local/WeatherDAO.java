@@ -30,4 +30,6 @@ public interface WeatherDAO {
 
     @Query("SELECT * FROM weather_daily WHERE cityName = :cityName ORDER BY timestamp ASC")
     List<WeatherDailyEntity> getDailyForecast(String cityName);
+
+    // TODO: Test methods. Delete later on. SELECT * from all entities
 }
