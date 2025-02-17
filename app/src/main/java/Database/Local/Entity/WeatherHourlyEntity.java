@@ -10,11 +10,15 @@ public class WeatherHourlyEntity {
     @NonNull
     private String cityName;
     private long timestamp;
-    private double temperature;
+    private float temperature;
     private int humidity;
     private String weatherDescription;
 
-    public WeatherHourlyEntity(String cityName, long timestamp, double temperature, int humidity, String weatherDescription) {
+    public void setWeatherDescription(String weatherDescription) {
+        this.weatherDescription = weatherDescription;
+    }
+
+    public WeatherHourlyEntity(String cityName, long timestamp, float temperature, int humidity, String weatherDescription) {
         this.cityName = cityName;
         this.timestamp = timestamp;
         this.temperature = temperature;
@@ -23,18 +27,40 @@ public class WeatherHourlyEntity {
     }
 
     // Getters y Setters
-    public String getCityName() { return cityName; }
-    public void setCityName(String cityName) { this.cityName = cityName; }
+    @NonNull
+    public String getCityName() {
+        return cityName;
+    }
 
-    public long getTimestamp() { return timestamp; }
-    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+    public void setCityName(@NonNull String cityName) {
+        this.cityName = cityName;
+    }
 
-    public double getTemperature() { return temperature; }
-    public void setTemperature(double temperature) { this.temperature = temperature; }
+    public long getTimestamp() {
+        return timestamp;
+    }
 
-    public int getHumidity() { return humidity; }
-    public void setHumidity(int humidity) { this.humidity = humidity; }
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
 
-    public String getWeatherDescription() { return weatherDescription; }
-    public void setWeatherDescription(String weatherDescription) { this.weatherDescription = weatherDescription; }
+    public float getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(float temperature) {
+        this.temperature = temperature;
+    }
+
+    public int getHumidity() {
+        return humidity;
+    }
+
+    public void setHumidity(int humidity) {
+        this.humidity = humidity;
+    }
+
+    public String getWeatherDescription() {
+        return weatherDescription;
+    }
 }

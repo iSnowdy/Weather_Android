@@ -10,12 +10,12 @@ public class WeatherDailyEntity {
     @NonNull
     private String cityName;
     private long timestamp;
-    private double tempMin;
-    private double tempMax;
+    private float tempMin;
+    private float tempMax;
     private int humidity;
     private String weatherDescription;
 
-    public WeatherDailyEntity(String cityName, long timestamp, double tempMin, double tempMax, int humidity, String weatherDescription) {
+    public WeatherDailyEntity(String cityName, long timestamp, float tempMin, float tempMax, int humidity, String weatherDescription) {
         this.cityName = cityName;
         this.timestamp = timestamp;
         this.tempMin = tempMin;
@@ -25,21 +25,52 @@ public class WeatherDailyEntity {
     }
 
     // Getters y Setters
-    public String getCityName() { return cityName; }
-    public void setCityName(String cityName) { this.cityName = cityName; }
+    @NonNull
+    public String getCityName() {
+        return cityName;
+    }
 
-    public long getTimestamp() { return timestamp; }
-    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+    public void setCityName(@NonNull String cityName) {
+        this.cityName = cityName;
+    }
 
-    public double getTempMin() { return tempMin; }
-    public void setTempMin(double tempMin) { this.tempMin = tempMin; }
+    public long getTimestamp() {
+        return timestamp;
+    }
 
-    public double getTempMax() { return tempMax; }
-    public void setTempMax(double tempMax) { this.tempMax = tempMax; }
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
 
-    public int getHumidity() { return humidity; }
-    public void setHumidity(int humidity) { this.humidity = humidity; }
+    public float getTempMin() {
+        return tempMin;
+    }
 
-    public String getWeatherDescription() { return weatherDescription; }
-    public void setWeatherDescription(String weatherDescription) { this.weatherDescription = weatherDescription; }
+    public void setTempMin(float tempMin) {
+        this.tempMin = tempMin;
+    }
+
+    public float getTempMax() {
+        return tempMax;
+    }
+
+    public void setTempMax(float tempMax) {
+        this.tempMax = tempMax;
+    }
+
+    public int getHumidity() {
+        return humidity;
+    }
+
+    public void setHumidity(int humidity) {
+        this.humidity = humidity;
+    }
+
+    public String getWeatherDescription() {
+        return weatherDescription;
+    }
+
+    public void setWeatherDescription(String weatherDescription) {
+        this.weatherDescription = weatherDescription;
+    }
 }

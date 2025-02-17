@@ -3,8 +3,12 @@ package Database.Local.Entity;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
+// Must be Serializable so we can pass objects inside a Bundle
+
 @Entity(tableName = "cities")
-public class City {
+public class City implements Serializable {
     @PrimaryKey(autoGenerate = false)
     private final Integer id;
     private String name;

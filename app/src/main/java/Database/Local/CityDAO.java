@@ -23,7 +23,7 @@ public interface CityDAO {
     @Delete
     int deleteCity(City city);
     @Query("SELECT * FROM cities WHERE id = :id")
-    City getWeather(Integer id);
+    City getCity(Integer id);
     @Query("SELECT * FROM cities")
-    List<City> getWeatherList();
+    List<City> getCities();
 }
