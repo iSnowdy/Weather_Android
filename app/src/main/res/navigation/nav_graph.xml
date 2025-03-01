@@ -2,15 +2,15 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/cityListFragment">
+    app:startDestination="@id/mainFragment">
 
     <fragment
-        android:id="@+id/cityListFragment"
-        android:name="com.example.weebther.UI.Fragments.CityListFragment"
+        android:id="@+id/mainFragment"
+        android:name="com.example.weebther.UI.Fragments.MainFragment"
         android:label="Cities"
-        tools:layout="@layout/fragment_city_list">
+        tools:layout="@layout/fragment_main">
         <action
-            android:id="@+id/action_cityListFragment_to_weatherDetailsFragment"
+            android:id="@+id/action_mainFragment_to_weatherDetailsFragment"
             app:destination="@id/weatherDetailsFragment" />
     </fragment>
 

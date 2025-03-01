@@ -1,4 +1,4 @@
-package com.example.weebther.Domain.Models;
+package com.example.weebther.Database.Remote.RemoteModels;
 
 import com.google.gson.annotations.SerializedName;
 

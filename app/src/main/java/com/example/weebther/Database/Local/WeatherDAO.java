@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.example.weebther.Database.Local.Entity.WeatherCurrentEntity;
 import com.example.weebther.Database.Local.Entity.WeatherDailyEntity;
@@ -23,13 +24,33 @@ public interface WeatherDAO {
     void storeDailyWeather(List<WeatherDailyEntity> daily);
 
     @Query("SELECT * FROM weather_current WHERE cityName = :cityName LIMIT 1")
-    WeatherCurrentEntity getLatestWeatherForCity(String cityName);
+    Optional<WeatherCurrentEntity> getLatestWeatherForCity(String cityName);
 
     @Query("SELECT * FROM weather_hourly WHERE cityName = :cityName ORDER BY timestamp ASC")
     List<WeatherHourlyEntity> getHourlyForecast(String cityName);
 
     @Query("SELECT * FROM weather_daily WHERE cityName = :cityName ORDER BY timestamp ASC")
     List<WeatherDailyEntity> getDailyForecast(String cityName);
+
+    // "Normal" DELETE methods
+    @Query("DELETE FROM weather_current WHERE cityName = :cityName")
+    void deleteWeatherForCity(String cityName);
+
+    @Query("DELETE FROM weather_hourly WHERE cityName = :cityName")
+    void deleteHourlyWeatherForCity(String cityName);
+
+    @Query("DELETE FROM weather_daily WHERE cityName = :cityName")
+    void deleteDailyWeatherForCity(String cityName);
+
+    // DELETE methods for the Worker to use
+    @Query("DELETE FROM weather_current WHERE lastUpdated < :timeStampToDelete")
+    int deleteOldWeather(long timeStampToDelete);
+
+    @Query("DELETE FROM weather_hourly WHERE timestamp < :timeStampToDelete")
+    int deleteOldHourlyWeather(long timeStampToDelete);
+
+    @Query("DELETE FROM weather_daily WHERE timestamp < :timeStampToDelete")
+    int deleteOldDailyWeather(long timeStampToDelete);
 
     // TODO: Test methods. Delete later on. SELECT * from all entities
 }

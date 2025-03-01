@@ -3,6 +3,8 @@ package com.example.weebther.UI.Adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,25 +17,26 @@ import com.example.weebther.R;
 import com.example.weebther.UI.ViewModels.OnCityClickListener;
 
 /*
-
 CityViewHolder optimizes the RecyclerView we will be using. It saves the references of the views
 inside each CardView.
-
 */
 
+
+/**
+ * Adapter for displaying a list of cities with weather data.
+ */
 
 public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder> {
     private final List<City> cityList;
     private final OnCityClickListener onCityClickListener;
+    private final OnCityClickListener onRefreshClickListener;
 
-
-    public CityAdapter(List<City> cityList, OnCityClickListener onCityClickListener) {
+    public CityAdapter(List<City> cityList, OnCityClickListener onCityClickListener, OnCityClickListener onRefreshClickListener) {
         this.cityList = cityList;
         this.onCityClickListener = onCityClickListener;
+        this.onRefreshClickListener = onRefreshClickListener;
     }
 
-
-    // Creates the View of the item
     @NonNull
     @Override
     public CityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -41,14 +44,13 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
         return new CityViewHolder(view);
     }
 
-    // Once created, data is assigned to it
     @Override
     public void onBindViewHolder(@NonNull CityViewHolder holder, int position) {
         City city = cityList.get(position);
         holder.cityNameTextView.setText(city.getName());
-        // On click event for every city displayed
+
         holder.itemView.setOnClickListener(v -> onCityClickListener.onCityClick(city));
-        // TODO: Modify the body of the onCityClick listener later on
+        holder.refreshButton.setOnClickListener(v -> onRefreshClickListener.onCityClick(city));
     }
 
     @Override
@@ -62,13 +64,17 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
         notifyDataSetChanged();
     }
 
-
+    /**
+     * ViewHolder for city items.
+     */
     public static class CityViewHolder extends RecyclerView.ViewHolder {
         TextView cityNameTextView;
+        ImageButton refreshButton;
 
         public CityViewHolder(View itemView) {
             super(itemView);
             cityNameTextView = itemView.findViewById(R.id.cityNameTextView);
+            refreshButton = itemView.findViewById(R.id.refreshWeatherButton);
         }
     }
 }

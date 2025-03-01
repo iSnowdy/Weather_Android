@@ -2,7 +2,7 @@ package com.example.weebther.Database.Remote;
 
 import java.util.List;
 
-import com.example.weebther.Domain.Models.GeoCodingResponse;
+import com.example.weebther.Database.Remote.RemoteModels.GeoCodingResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

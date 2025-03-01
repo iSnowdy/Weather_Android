@@ -1,4 +1,4 @@
-package com.example.weebther.Domain.Models;
+package com.example.weebther.Database.Remote.RemoteModels;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -16,7 +16,8 @@ public class WeatherDaily {
     @SerializedName("weather")
     public List<WeatherCondition> weatherConditions;
 
-    public class Temperature {
+    // The static keyword allows us to instantiate Temperature without an instance of WeatherDaily
+    public static class Temperature {
         @SerializedName("day")
         public double day;
         @SerializedName("min")
@@ -24,5 +25,4 @@ public class WeatherDaily {
         @SerializedName("max")
         public double max;
     }
-
 }

@@ -1,5 +1,6 @@
-package com.example.weebther.Domain.Models;
+package com.example.weebther.Database.Remote.RemoteModels;
 
+import com.example.weebther.Database.Local.Entity.WeatherCurrentEntity;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -62,5 +63,19 @@ public class WeatherResponse {
 
         }
         return dailyEntities;
+    }
+
+    // Converts this object to a WeatherCurrentEntity
+    public WeatherCurrentEntity getCurrentEntity(String cityName) {
+        return new WeatherCurrentEntity(
+                cityName,
+                (float) current.temperature,
+                (float) current.feelsLike,
+                current.humidity,
+                (float) current.windSpeed,
+                current.weatherConditions.get(0).description,
+                current.weatherConditions.get(0).icon,
+                System.currentTimeMillis()
+        );
     }
 }

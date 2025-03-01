@@ -2,8 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    tools:context=".UI.Fragments.WeatherDetailsFragment">
 
     <TextView
         android:id="@+id/cityName"
@@ -12,6 +14,13 @@
         android:text="City Name"
         android:textSize="24sp"
         android:textStyle="bold" />
+
+    <!--<ImageView
+        android:id="@+id/weatherIcon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_weather_placeholder"/>-->
 
     <TextView
         android:id="@+id/temperature"
@@ -40,5 +49,4 @@
         android:layout_height="wrap_content"
         android:text="Weather Description"
         android:textSize="16sp" />
-
 </LinearLayout>

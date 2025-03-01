@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "weather_daily")
 public class WeatherDailyEntity {
     @PrimaryKey(autoGenerate = false)
-    @NonNull
+    private long id;
     private String cityName;
     private long timestamp;
     private float tempMin;
@@ -22,15 +22,25 @@ public class WeatherDailyEntity {
         this.tempMax = tempMax;
         this.humidity = humidity;
         this.weatherDescription = weatherDescription;
+
+        this.id = (cityName + timestamp).hashCode();
+        // Generates a unique ID based on the city and timestamp. Needed to have a combined PK to store historic data
     }
 
     // Getters y Setters
-    @NonNull
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getCityName() {
         return cityName;
     }
 
-    public void setCityName(@NonNull String cityName) {
+    public void setCityName(String cityName) {
         this.cityName = cityName;
     }
 

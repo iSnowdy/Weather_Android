@@ -1,6 +1,6 @@
 package com.example.weebther.Database.Remote;
 
-import com.example.weebther.Domain.Models.WeatherResponse;
+import com.example.weebther.Database.Remote.RemoteModels.WeatherResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -19,7 +19,7 @@ API Rest are added to the URL.
 
 So the onecall plus the query parameters will be added to the URL we built in the WeatherService
 using Retrofit.Builder().
- */
+*/
 
 public interface WeatherService {
     @GET("onecall")

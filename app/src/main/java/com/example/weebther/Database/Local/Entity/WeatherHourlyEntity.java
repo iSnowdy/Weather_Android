@@ -7,16 +7,12 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "weather_hourly")
 public class WeatherHourlyEntity {
     @PrimaryKey(autoGenerate = false)
-    @NonNull
+    private long id;
     private String cityName;
     private long timestamp;
     private float temperature;
     private int humidity;
     private String weatherDescription;
-
-    public void setWeatherDescription(String weatherDescription) {
-        this.weatherDescription = weatherDescription;
-    }
 
     public WeatherHourlyEntity(String cityName, long timestamp, float temperature, int humidity, String weatherDescription) {
         this.cityName = cityName;
@@ -24,15 +20,25 @@ public class WeatherHourlyEntity {
         this.temperature = temperature;
         this.humidity = humidity;
         this.weatherDescription = weatherDescription;
+
+        // Generates a unique ID based on the city and timestamp. Needed to have a combined PK to store historic data
+        this.id = (cityName + timestamp).hashCode();
     }
 
     // Getters y Setters
-    @NonNull
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getCityName() {
         return cityName;
     }
 
-    public void setCityName(@NonNull String cityName) {
+    public void setCityName(String cityName) {
         this.cityName = cityName;
     }
 
@@ -62,5 +68,9 @@ public class WeatherHourlyEntity {
 
     public String getWeatherDescription() {
         return weatherDescription;
+    }
+
+    public void setWeatherDescription(String weatherDescription) {
+        this.weatherDescription = weatherDescription;
     }
 }

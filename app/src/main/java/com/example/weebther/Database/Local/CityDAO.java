@@ -8,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.example.weebther.Database.Local.Entity.City;
 
@@ -18,12 +19,28 @@ import com.example.weebther.Database.Local.Entity.City;
 public interface CityDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long storeCity(City city);
+
     @Update
     int updateCity(City city);
-    @Delete
-    int deleteCity(City city);
-    @Query("SELECT * FROM cities WHERE id = :id")
-    City getCity(Integer id);
+
+    @Query("DELETE FROM cities WHERE name = :cityName")
+    int deleteCityByName(String cityName);
+
+
+    @Query("UPDATE cities SET isFavourite = :isFavourite WHERE name = :cityName")
+    int setCityAsFavourite(String cityName, boolean isFavourite);
+
+
+    @Query("UPDATE cities SET lastUpdated = :lastUpdated WHERE name = :cityName")
+    int updateLastAccessed(String cityName, long lastUpdated);
+
+    // Retrieves the last x amount of cities from the DB
+    @Query("SELECT * FROM cities ORDER BY lastUpdated DESC LIMIT :limit")
+    List<City> getCitiesByLastAccessed(int limit);
+
+    @Query("SELECT * FROM cities WHERE name = :cityName")
+    Optional<City> getCity(String cityName);
+
     @Query("SELECT * FROM cities")
     List<City> getCities();
 

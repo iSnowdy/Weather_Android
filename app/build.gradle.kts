@@ -57,5 +57,5 @@ dependencies {
     implementation(libs.okhttp)
     implementation (libs.navigation.fragment.ktx)
     implementation (libs.navigation.ui.ktx)
-
+    implementation (libs.work.runtime)
 }
