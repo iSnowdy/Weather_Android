@@ -175,8 +175,6 @@ public class WeatherDetailsFragment extends Fragment {
                 .atZone(ZoneId.systemDefault()) // System default zone
                 .toLocalDate();
 
-        Log.d("WeatherDetailsFragment", "Today: " + today + " | Forecast Date: " + forecastDate + " | Is Today? " + today.isEqual(forecastDate));
-
         return today.isEqual(forecastDate);
     }
 

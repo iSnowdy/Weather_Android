@@ -145,15 +145,12 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
     }
 
     private int getWeatherIconResource(Context context, String iconName, String weatherDescription) {
-        Log.d("CityAdapter", "Icon name: " + iconName);
         // Removes the last character (d or n) to build the icon name (01d | 01n -> _01)
         String resourceName = "_" + iconName.substring(0, 2) + "d";
 
         boolean isThunderStorm = iconName.equals("11d") || iconName.equals("11n");
         boolean isRain = weatherDescription.toLowerCase().contains("drizzle") || weatherDescription.toLowerCase().contains("rain");
         if (isThunderStorm && isRain) resourceName = "_storm_rain";
-
-        Log.d("CityAdapter", "My icon name: " + resourceName);
 
         // Obtains the resource ID to set the ImageView in the Binder
         int resourceID = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());

@@ -16,6 +16,8 @@ import com.example.weebther.Database.Repository.GeoCodingRepository;
 import com.example.weebther.Database.Repository.WeatherRepository;
 import com.example.weebther.Exceptions.GeoLocatorException;
 import com.example.weebther.R;
+import com.example.weebther.Utils.SharedPreferencesManager;
+import com.example.weebther.Utils.UnitSystem;
 
 import java.util.List;
 
@@ -36,18 +38,25 @@ public class WeatherViewModel extends AndroidViewModel {
         this.geoCodingRepository = new GeoCodingRepository(application);
     }
 
+    // Changes the unit system of the API call
+    public void changeUnitSystem(UnitSystem unitSystem) {
+        SharedPreferencesManager.saveUnitPreference(getApplication(), unitSystem);
+        Log.d("WeatherViewModel", "Unit system changed to: " + unitSystem);
+        refreshAllCitiesWeather();
+    }
+
     public void fetchWeatherByCity(String cityName) {
         geoCodingRepository.getCity(cityName, new GeoCodingCallBack() {
             @Override
             public void onSuccess(City city) {
                 Log.d("WeatherViewModel", "City found: " + city.getName());
 
-                // 🔹 Primero obtenemos el clima desde Room
+                // First, obtain weather data from cache (Room)
                 weatherRepository.getCurrentWeather(city.getName()).observeForever(weatherData -> {
                     if (weatherData != null) {
-                        Log.d("WeatherViewModel", "🌤️ Using cached weather data for " + city.getName());
-                    } else {
-                        Log.d("WeatherViewModel", "❌ No cached weather found. Calling API...");
+                        Log.d("WeatherViewModel", "Using cached weather data for " + city.getName());
+                    } else { // If there's no data, then we call the API
+                        Log.d("WeatherViewModel", "No cached weather found. Calling API...");
                         weatherRepository.refreshWeather(city.getName(), city.getLatitude(), city.getLongitude());
                     }
                 });
@@ -70,8 +79,20 @@ public class WeatherViewModel extends AndroidViewModel {
         weatherRepository.refreshWeather(cityName, latitude, longitude);
     }
 
+    public void refreshAllCitiesWeather() {
+        weatherRepository.getRecentCities(MAX_CITIES).observeForever(cities -> {
+            for (City city : cities) {
+                refreshWeather(city.getName(), city.getLatitude(), city.getLongitude());
+            }
+        });
+    }
+
     public LiveData<List<City>> getRecentCities() {
         return weatherRepository.getRecentCities(MAX_CITIES);
+    }
+
+    public LiveData<List<City>> getFavouriteCities() {
+        return weatherRepository.getFavouriteCities();
     }
 
     public void toggleCityFavorite(String cityName, boolean isFavorite) {

@@ -69,6 +69,9 @@ public class WeatherLocalDataSource {
         return cityDAO.getCitiesByLastAccessed(limit);
     }
 
+    public LiveData<List<City>> getFavouriteCities() {
+        return cityDAO.getFavouriteCities();
+    }
 
     public void deleteCity(String cityName) {
         executorService.execute(() -> {

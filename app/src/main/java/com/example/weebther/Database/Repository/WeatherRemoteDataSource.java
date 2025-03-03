@@ -1,21 +1,28 @@
 package com.example.weebther.Database.Repository;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.weebther.Database.Remote.WeatherCallBack;
 import com.example.weebther.Database.Remote.WeatherService;
 import com.example.weebther.Database.Remote.RemoteModels.WeatherResponse;
 import com.example.weebther.Exceptions.OpenWeatherException;
+import com.example.weebther.Utils.SharedPreferencesManager;
+
+import java.util.function.Predicate;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class WeatherRemoteDataSource {
+    private final Context context;
     private static final String OPEN_WEATHER_BASE_URL = "https://api.openweathermap.org/data/3.0/";
     private final WeatherService weatherService;
 
-    public WeatherRemoteDataSource() {
+    public WeatherRemoteDataSource(Context context) {
+        this.context = context;
         this.weatherService = RetrofitClient.getRetrofitInstance(OPEN_WEATHER_BASE_URL).create(WeatherService.class);
     }
 
@@ -29,7 +36,9 @@ public class WeatherRemoteDataSource {
      */
 
     public void fetchWeather(double latitude, double longitude, String apiKey, WeatherCallBack callback) {
-        weatherService.getWeather(latitude, longitude, apiKey, "metric").enqueue(new Callback<WeatherResponse>() {
+        String unit = SharedPreferencesManager.getUnitPreference(context);
+        Log.d("WeatherRemoteDataSource", "Unit system: " + unit);
+        weatherService.getWeather(latitude, longitude, apiKey, unit).enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

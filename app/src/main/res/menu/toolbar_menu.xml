@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Favorites Toggle Button -->
+    <item
+        android:id="@+id/action_favourites"
+        android:icon="@drawable/cloud_heart"
+        android:title="Favorites"
+        app:showAsAction="always" />
+
+    <!-- Units Toggle Button -->
+    <!-- By default it shows metric system icon -->
+    <item
+        android:id="@+id/action_units"
+        android:icon="@drawable/celsius"
+        android:title="Change Units"
+        app:showAsAction="always" />
+
+</menu>

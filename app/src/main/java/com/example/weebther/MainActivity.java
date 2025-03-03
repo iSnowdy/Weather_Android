@@ -2,6 +2,8 @@ package com.example.weebther;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +16,7 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.weebther.Database.CleanUpWorker;
+import com.example.weebther.UI.Fragments.MainFragment;
 
 import java.util.concurrent.TimeUnit;
 

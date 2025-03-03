@@ -42,6 +42,11 @@ public interface CityDAO {
     @Query("SELECT * FROM cities WHERE name = :cityName")
     LiveData<City> getCity(String cityName);
 
+
+    // Retrieves all cities saved as favourite
+    @Query("SELECT * FROM cities WHERE isFavourite = 1")
+    LiveData<List<City>> getFavouriteCities();
+
     @Query("SELECT * FROM cities")
     LiveData<List<City>> getCities();
 }

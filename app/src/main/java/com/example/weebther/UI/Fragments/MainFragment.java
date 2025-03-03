@@ -3,10 +3,14 @@ package com.example.weebther.UI.Fragments;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -20,20 +24,24 @@ import com.example.weebther.Database.Remote.RemoteModels.WeatherResponse;
 import com.example.weebther.R;
 import com.example.weebther.UI.Adapters.CityAdapter;
 import com.example.weebther.UI.ViewModels.WeatherViewModel;
+import com.example.weebther.Utils.SharedPreferencesManager;
+import com.example.weebther.Utils.UnitSystem;
 
 import java.util.ArrayList;
 
 
 public class MainFragment extends Fragment {
+    private MenuItem menuItem; // Needed in order to change the unit system icon
+
     private WeatherViewModel weatherViewModel;
     private RecyclerView recyclerView;
     private SearchView searchView;
     private CityAdapter cityAdapter;
 
+    private boolean isFavouritesFilterActive = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
-        Log.d("MainFragment", "MainFragment loaded");
-
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         searchView = view.findViewById(R.id.searchView);
         recyclerView = view.findViewById(R.id.citiesRecyclerView);
@@ -98,5 +106,78 @@ public class MainFragment extends Fragment {
                 weatherViewModel.updateLastAccessed(cityName);
             }
         });
+    }
+
+    // Toolbar stuff
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true); // This will allow the fragment to manage toolbar options
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        // Stores the unit menu item for later updates (unit system icon)
+        menuItem = menu.findItem(R.id.action_units);
+        String unit = SharedPreferencesManager.getUnitPreference(requireContext());
+        UnitSystem newUnit = unit.equals("metric") ? UnitSystem.METRIC : UnitSystem.IMPERIAL;
+        updateUnitIcon(menuItem, newUnit);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_favourites) {
+            toggleFavouritesFilter();
+            return true;
+        } else if (item.getItemId() == R.id.action_units) {
+            toggleUnitSystem();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void toggleFavouritesFilter() {
+        isFavouritesFilterActive = !isFavouritesFilterActive; // Switches the state
+
+        // Removes all previous observers
+        weatherViewModel.getFavouriteCities().removeObservers(getViewLifecycleOwner());
+        weatherViewModel.getRecentCities().removeObservers(getViewLifecycleOwner());
+
+        if (isFavouritesFilterActive) {
+            weatherViewModel.getFavouriteCities().observe(getViewLifecycleOwner(), cities -> {
+                cityAdapter.updateCitiesData(new ArrayList<>(cities));
+            });
+            Toast.makeText(requireContext(), "Showing favourite cities", Toast.LENGTH_SHORT).show();
+        } else {
+            weatherViewModel.getRecentCities().observe(getViewLifecycleOwner(), cities -> {
+                cityAdapter.updateCitiesData(new ArrayList<>(cities));
+            });
+            Toast.makeText(requireContext(), "Showing recent cities", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void toggleUnitSystem() {
+        String currentUnit = SharedPreferencesManager.getUnitPreference(requireContext());
+        UnitSystem newUnit = currentUnit.equals("metric") ? UnitSystem.IMPERIAL : UnitSystem.METRIC;
+
+        SharedPreferencesManager.saveUnitPreference(requireContext(), newUnit);
+
+        weatherViewModel.changeUnitSystem(newUnit);
+
+        // Updates the UI with the new unit system icon
+        updateUnitIcon(menuItem, newUnit);
+
+        Toast.makeText(requireContext(), "Unit system changed to: " + newUnit.getValue(), Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateUnitIcon(MenuItem item, UnitSystem unitSystem) {
+        if (item != null) {
+            int newIcon = unitSystem.equals(UnitSystem.METRIC) ? R.drawable.celsius : R.drawable.fahrenheit;
+            item.setIcon(newIcon);
+        }
     }
 }

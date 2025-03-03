@@ -37,7 +37,7 @@ public class WeatherRepository {
      * @param apiKey  OpenWeather API key
      */
     public WeatherRepository(Context context, String apiKey) {
-        this.remoteDataSource = new WeatherRemoteDataSource();
+        this.remoteDataSource = new WeatherRemoteDataSource(context);
         this.localDataSource = new WeatherLocalDataSource(context);
         this.apiKey = apiKey;
         this.executorService = Executors.newSingleThreadExecutor();
@@ -148,6 +148,10 @@ public class WeatherRepository {
      */
     public LiveData<List<City>> getRecentCities(int limit) {
         return localDataSource.getRecentCities(limit);
+    }
+
+    public LiveData<List<City>> getFavouriteCities() {
+        return localDataSource.getFavouriteCities();
     }
 
     /**
