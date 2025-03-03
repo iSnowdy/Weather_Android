@@ -17,6 +17,7 @@ import androidx.work.WorkManager;
 
 import com.example.weebther.Database.CleanUpWorker;
 import com.example.weebther.UI.Fragments.MainFragment;
+import com.google.android.libraries.places.api.Places;
 
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
         setupToolbar();
         setupNavigation();
         setupCleanUpWorker();
+
+        String googleMapsApiKey = getString(R.string.MAPS_SDK_API_KEY);
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), googleMapsApiKey);
+        }
     }
 
     /**
@@ -96,4 +102,12 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onSupportNavigateUp();
     }
+
+    // Ensures that the Google Maps API is closed when the app shut downs
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Places.deinitialize();
+    }
+
 }

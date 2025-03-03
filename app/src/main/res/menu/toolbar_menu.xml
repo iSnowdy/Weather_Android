@@ -4,9 +4,9 @@
 
     <!-- Favorites Toggle Button -->
     <item
-        android:id="@+id/action_favourites"
-        android:icon="@drawable/cloud_heart"
-        android:title="Favorites"
+        android:id="@+id/action_add_from_map"
+        android:icon="@drawable/google_maps"
+        android:title="Google Maps"
         app:showAsAction="always" />
 
     <!-- Units Toggle Button -->
@@ -15,6 +15,13 @@
         android:id="@+id/action_units"
         android:icon="@drawable/celsius"
         android:title="Change Units"
+        app:showAsAction="always" />
+
+    <!-- Favorites Toggle Button -->
+    <item
+        android:id="@+id/action_favourites"
+        android:icon="@drawable/cloud_heart"
+        android:title="Favourites"
         app:showAsAction="always" />
 
 </menu>

@@ -1,5 +1,6 @@
 package com.example.weebther.UI.Fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.weebther.Utils.WeatherFormatter;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.BarData;
@@ -134,35 +136,52 @@ public class WeatherDetailsFragment extends Fragment {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private void updateWeatherUI(WeatherCurrentEntity weatherCurrentEntity) {
         if (weatherCurrentEntity != null) {
             Log.d("WeatherDetailsFragment", "Updating weather UI current entity");
-            temperature.setText(String.format("Temperature: %.1f°C", weatherCurrentEntity.getTemperature()));
-            feelsLike.setText(String.format("Feels like: %.1f°C", weatherCurrentEntity.getFeelsLike()));
+
+            temperature.setText("Temperature: " + WeatherFormatter.formatUnit(
+                    requireContext(), weatherCurrentEntity.getTemperature(), WeatherFormatter.UnitType.TEMPERATURE));
+            feelsLike.setText("Feels like: " + WeatherFormatter.formatUnit(
+                    requireContext(), weatherCurrentEntity.getFeelsLike(), WeatherFormatter.UnitType.TEMPERATURE));
             description.setText(weatherCurrentEntity.getWeatherDescription());
 
-            humidity.setText(String.format("Humidity: %d%%", weatherCurrentEntity.getHumidity()));
-            uvi.setText(String.format("UV Index: %.1f", weatherCurrentEntity.getUvi()));
-            windSpeed.setText(String.format("Wind Speed: %.1f m/s", weatherCurrentEntity.getWindSpeed()));
+            humidity.setText("Humidity: " + weatherCurrentEntity.getHumidity() + "%");
+            uvi.setText(WeatherFormatter.formatUnit(
+                    requireContext(), weatherCurrentEntity.getUvi(), WeatherFormatter.UnitType.UV_INDEX));
+            windSpeed.setText("Wind: " + WeatherFormatter.formatUnit(
+                    requireContext(), weatherCurrentEntity.getWindSpeed(), WeatherFormatter.UnitType.WIND_SPEED));
         }
     }
 
-    // Exit loop if today is found?
     private void updateDailyForecast(List<WeatherDailyEntity> dailyForecast) {
-        Log.d("WeatherDetailsFragment", "Updating weather UI current entity");
-        if (dailyForecast != null && !dailyForecast.isEmpty()) {
-            Log.d("WeatherDetailsFragment", "Updating weather UI current entity (INSIDE IF)");
-            for (WeatherDailyEntity daily : dailyForecast) {
-                boolean isToday = findOutIfToday(daily);
-                if (isToday) {
-                    minTemp.setText(String.format("Min Temperature: %.1f°C", daily.getTempMin()));
-                    maxTemp.setText(String.format("Max Temperature: %.1f°C", daily.getTempMax()));
+        Log.d("WeatherDetailsFragment", "Updating daily weather UI");
 
-                    rainProbability.setText(String.format("Rain Probability: %.1f%%", daily.getProbabilityOfPrecipitation() * 100));
-                    if (isRaining(daily)) {
-                        rain.setText(String.format("Rain: %.1fmm", daily.getRain()));
-                    }
+        if (dailyForecast == null || dailyForecast.isEmpty()) {
+            Log.d("WeatherDetailsFragment", "No daily forecast data available.");
+            return;
+        }
+
+        for (WeatherDailyEntity daily : dailyForecast) {
+            if (findOutIfToday(daily)) {
+                Log.d("WeatherDetailsFragment", "Today's forecast found. Updating UI.");
+
+                minTemp.setText(WeatherFormatter.formatUnit(
+                        requireContext(), daily.getTempMin(), WeatherFormatter.UnitType.TEMPERATURE));
+                maxTemp.setText(WeatherFormatter.formatUnit(
+                        requireContext(), daily.getTempMax(), WeatherFormatter.UnitType.TEMPERATURE));
+                rainProbability.setText(WeatherFormatter.formatUnit(requireContext(), daily.getProbabilityOfPrecipitation(), WeatherFormatter.UnitType.PERCENTAGE));
+
+                if (isRaining(daily)) {
+                    rain.setText(WeatherFormatter.formatUnit(
+                            requireContext(), daily.getRain(), WeatherFormatter.UnitType.RAIN_VOLUME));
+                    rain.setVisibility(View.VISIBLE);
+                } else {
+                    rain.setVisibility(View.GONE); // Hides the TextView if there's no rain
                 }
+
+                break; // Early exit of the loop if we found today
             }
         }
     }

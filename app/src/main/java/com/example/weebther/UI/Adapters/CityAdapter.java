@@ -24,6 +24,7 @@ import com.example.weebther.UI.ViewModels.OnCityClickListener;
 import com.example.weebther.UI.ViewModels.WeatherViewModel;
 import com.example.weebther.Database.Remote.RemoteModels.WeatherResponse;
 import com.example.weebther.Utils.CityDiffCallback;
+import com.example.weebther.Utils.WeatherFormatter;
 
 /**
  * Adapter for displaying a list of cities with weather data.
@@ -95,8 +96,10 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
             if (weatherResponse != null) {
                 Log.d("CityAdapter", "Updating weather for " + city.getName());
                 // Temperature, weather description and the corresponding icon
-                holder.temperatureTextView.setText(String.format("%.1f°C", weatherResponse.getTemperature()));
+                holder.temperatureTextView.setText(WeatherFormatter.formatUnit(
+                        holder.itemView.getContext(), weatherResponse.getTemperature(), WeatherFormatter.UnitType.TEMPERATURE));
                 holder.descriptionTextView.setText(weatherResponse.getWeatherDescription());
+
 
                 int iconRes = getWeatherIconResource(holder.itemView.getContext(), weatherResponse.getWeatherIcon(), weatherResponse.getWeatherDescription());
                 holder.weatherIconImageView.setImageResource(iconRes);

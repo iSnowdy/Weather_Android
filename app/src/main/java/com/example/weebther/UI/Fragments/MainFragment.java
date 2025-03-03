@@ -1,5 +1,7 @@
 package com.example.weebther.UI.Fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,8 +28,20 @@ import com.example.weebther.UI.Adapters.CityAdapter;
 import com.example.weebther.UI.ViewModels.WeatherViewModel;
 import com.example.weebther.Utils.SharedPreferencesManager;
 import com.example.weebther.Utils.UnitSystem;
+import com.example.weebther.Utils.WeatherFormatter;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AddressComponent;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MainFragment extends Fragment {
@@ -39,6 +53,7 @@ public class MainFragment extends Fragment {
     private CityAdapter cityAdapter;
 
     private boolean isFavouritesFilterActive = false;
+    private static final int PLACE_PICKER_REQUEST = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
@@ -123,9 +138,7 @@ public class MainFragment extends Fragment {
 
         // Stores the unit menu item for later updates (unit system icon)
         menuItem = menu.findItem(R.id.action_units);
-        String unit = SharedPreferencesManager.getUnitPreference(requireContext());
-        UnitSystem newUnit = unit.equals("metric") ? UnitSystem.METRIC : UnitSystem.IMPERIAL;
-        updateUnitIcon(menuItem, newUnit);
+        updateUnitIcon(menuItem, WeatherFormatter.getPreferredUnitSystem(requireContext()));
     }
 
     @Override
@@ -136,6 +149,9 @@ public class MainFragment extends Fragment {
         } else if (item.getItemId() == R.id.action_units) {
             toggleUnitSystem();
             return true;
+        } else if (item.getItemId() == R.id.action_add_from_map) {
+             openPlacePicker();
+             return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -161,11 +177,10 @@ public class MainFragment extends Fragment {
     }
 
     private void toggleUnitSystem() {
-        String currentUnit = SharedPreferencesManager.getUnitPreference(requireContext());
-        UnitSystem newUnit = currentUnit.equals("metric") ? UnitSystem.IMPERIAL : UnitSystem.METRIC;
+        UnitSystem currentUnit = WeatherFormatter.getPreferredUnitSystem(requireContext());
+        UnitSystem newUnit = (currentUnit == UnitSystem.METRIC) ? UnitSystem.IMPERIAL : UnitSystem.METRIC;
 
         SharedPreferencesManager.saveUnitPreference(requireContext(), newUnit);
-
         weatherViewModel.changeUnitSystem(newUnit);
 
         // Updates the UI with the new unit system icon
@@ -176,8 +191,45 @@ public class MainFragment extends Fragment {
 
     private void updateUnitIcon(MenuItem item, UnitSystem unitSystem) {
         if (item != null) {
-            int newIcon = unitSystem.equals(UnitSystem.METRIC) ? R.drawable.celsius : R.drawable.fahrenheit;
+            int newIcon = (unitSystem == UnitSystem.METRIC) ? R.drawable.celsius : R.drawable.fahrenheit;
             item.setIcon(newIcon);
+        }
+    }
+
+    private void openPlacePicker() {
+        List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS);
+        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+                .build(requireContext());
+        startActivityForResult(intent, PLACE_PICKER_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+
+                String cityName = null;
+                // This will iterate all components of the address we retrieve in search of the city name
+                for (AddressComponent component : place.getAddressComponents().asList()) {
+                    if (component.getTypes().contains("locality")) { // "locality" represents a city in the Google Maps API
+                        cityName = component.getName();
+                        break;
+                    }
+                }
+
+                Log.d("PlacePicker", "Selected city: " + cityName);
+
+                if (cityName != null) {
+                    // With the city name from the Google Maps API, call the Search City method we already have
+                    searchCity(cityName);
+                }
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.e("PlacePicker", "Error: " + status.getStatusMessage());
+            }
         }
     }
 }

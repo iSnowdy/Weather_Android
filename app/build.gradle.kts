@@ -6,6 +6,8 @@ plugins {
 
 val WEATHER_APP_STRING: String =
     gradleLocalProperties(rootDir, providers).getProperty("WEATHER_API_KEY")
+val GOOGLE_MAPS_APP_STRING: String =
+    gradleLocalProperties(rootDir, providers).getProperty("MAPS_SDK_API_KEY")
 
 android {
     namespace = "com.example.weebther"
@@ -21,6 +23,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         resValue("string", "WEATHER_API_KEY", WEATHER_APP_STRING)
+        resValue("string", "MAPS_SDK_API_KEY", GOOGLE_MAPS_APP_STRING)
     }
 
     buildTypes {
@@ -61,4 +64,5 @@ dependencies {
     implementation (libs.navigation.ui.ktx)
     implementation (libs.work.runtime)
     implementation (libs.mpandroidchart)
+    implementation (libs.places)
 }
