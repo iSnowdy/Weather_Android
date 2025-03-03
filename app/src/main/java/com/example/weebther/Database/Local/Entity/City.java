@@ -6,6 +6,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 // Must be Serializable so we can pass objects inside a Bundle
 
@@ -41,6 +42,10 @@ public class City implements Serializable {
         return "\n-------------City Information-------------" +
                 "\nCity Name: " + name +
                 "\nCity Country: " + country +
+                "\nCity Latitude: " + latitude +
+                "\nCity Longitude: " + longitude +
+                "\nIs favourite? " + isFavourite +
+                "\nLast updated: " + LocalDate.ofEpochDay(lastUpdated) +
                 "\n-----------------------------------------";
     }
 

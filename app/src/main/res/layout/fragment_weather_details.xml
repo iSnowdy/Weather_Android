@@ -9,6 +9,7 @@
     <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/white"
         android:orientation="vertical"
         android:padding="16dp"
         tools:context=".UI.Fragments.WeatherDetailsFragment">
@@ -32,6 +33,14 @@
             android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/feelsLike"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Feels Like"
+            android:textAlignment="center"
+            android:textSize="16sp" />
+
+        <TextView
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,22 +49,63 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/hourlyForecast"
+            android:id="@+id/minTemp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="8dp"
-            android:text="Hourly Forecast"
+            android:text="Min Temperature"
             android:textAlignment="center"
-            android:textSize="14sp" />
+            android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/dailyForecast"
+            android:id="@+id/maxTemp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="8dp"
-            android:text="Daily Forecast"
+            android:text="Max Temperature"
             android:textAlignment="center"
-            android:textSize="14sp" />
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/humidity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Humidity"
+            android:textAlignment="center"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/uvi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="UV Index"
+            android:textAlignment="center"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/windSpeed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wind Speed"
+            android:textAlignment="center"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/rainProbability"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rain Probability"
+            android:textAlignment="center"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/rain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rain"
+            android:textAlignment="center"
+            android:textSize="16sp" />
+
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/temperatureChart"

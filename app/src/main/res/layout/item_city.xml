@@ -28,6 +28,13 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/cityCountryTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="City Country"
+                android:textSize="18sp" />
+
+            <TextView
                 android:id="@+id/temperatureTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -40,6 +47,12 @@
                 android:layout_height="wrap_content"
                 android:text="Description"
                 android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/weatherIconImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
         </LinearLayout>
 
         <ImageButton
@@ -49,5 +62,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Refresh Weather"
             android:src="@drawable/refresh" />
+
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -11,7 +11,7 @@ import com.example.weebther.Database.Local.Entity.WeatherCurrentEntity;
 import com.example.weebther.Database.Local.Entity.WeatherDailyEntity;
 import com.example.weebther.Database.Local.Entity.WeatherHourlyEntity;
 
-@Database(entities = {WeatherCurrentEntity.class, City.class, WeatherHourlyEntity.class, WeatherDailyEntity.class}, version = 2, exportSchema = false)
+@Database(entities = {WeatherCurrentEntity.class, City.class, WeatherHourlyEntity.class, WeatherDailyEntity.class}, version = 4, exportSchema = false)
 public abstract class DatabaseManager extends RoomDatabase {
     // Need a Singleton to avoid multiple instances of this class and volatile
     // to ensure that all changes to the DB are visible to multiple threads

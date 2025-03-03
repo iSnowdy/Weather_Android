@@ -1,6 +1,7 @@
 package com.example.weebther.UI.Fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,12 @@ import com.example.weebther.Database.Local.Entity.WeatherDailyEntity;
 import com.example.weebther.R;
 import com.example.weebther.UI.ViewModels.WeatherViewModel;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.BarData;
@@ -35,8 +40,14 @@ import com.github.mikephil.charting.data.LineDataSet;
  */
 public class WeatherDetailsFragment extends Fragment {
     private WeatherViewModel weatherViewModel;
-    private TextView cityName, temperature, description;
-    private TextView hourlyForecastTextView, dailyForecastTextView;
+    private TextView
+            cityName,
+            temperature, feelsLike,
+            description,
+            minTemp, maxTemp,
+            humidity, uvi,
+            windSpeed, rainProbability,
+            rain;
     private LineChart temperatureChart;
     private BarChart rainChart;
     private Button refreshButton;
@@ -72,15 +83,20 @@ public class WeatherDetailsFragment extends Fragment {
         return view;
     }
 
-    /**
-     * Initializes UI components.
-     */
     private void setupUI(View view) {
         cityName = view.findViewById(R.id.cityName);
         temperature = view.findViewById(R.id.temperature);
+        feelsLike = view.findViewById(R.id.feelsLike);
         description = view.findViewById(R.id.description);
-        hourlyForecastTextView = view.findViewById(R.id.hourlyForecast);
-        dailyForecastTextView = view.findViewById(R.id.dailyForecast);
+
+        minTemp = view.findViewById(R.id.minTemp);
+        maxTemp = view.findViewById(R.id.maxTemp);
+        humidity = view.findViewById(R.id.humidity);
+        uvi = view.findViewById(R.id.uvi);
+        windSpeed = view.findViewById(R.id.windSpeed);
+        rainProbability = view.findViewById(R.id.rainProbability);
+        rain = view.findViewById(R.id.rain);
+
         temperatureChart = view.findViewById(R.id.temperatureChart);
         rainChart = view.findViewById(R.id.rainChart);
         refreshButton = view.findViewById(R.id.refreshButton);
@@ -110,44 +126,80 @@ public class WeatherDetailsFragment extends Fragment {
         // Daily weather
         weatherViewModel.getDailyForecast(city.getName()).observe(getViewLifecycleOwner(), dailyData -> {
             if (dailyData != null) {
+                //updateDailyForecast(dailyData);
                 updateDailyForecast(dailyData);
                 setUpCharts(dailyData);
             }
         });
     }
 
-    /**
-     * Updates the UI with weather information.
-     */
+
     private void updateWeatherUI(WeatherCurrentEntity weatherCurrentEntity) {
         if (weatherCurrentEntity != null) {
-            temperature.setText(String.format("%.1f°C", weatherCurrentEntity.getTemperature()));
+            Log.d("WeatherDetailsFragment", "Updating weather UI current entity");
+            temperature.setText(String.format("Temperature: %.1f°C", weatherCurrentEntity.getTemperature()));
+            feelsLike.setText(String.format("Feels like: %.1f°C", weatherCurrentEntity.getFeelsLike()));
             description.setText(weatherCurrentEntity.getWeatherDescription());
+
+            humidity.setText(String.format("Humidity: %d%%", weatherCurrentEntity.getHumidity()));
+            uvi.setText(String.format("UV Index: %.1f", weatherCurrentEntity.getUvi()));
+            windSpeed.setText(String.format("Wind Speed: %.1f m/s", weatherCurrentEntity.getWindSpeed()));
         }
     }
 
-    /**
-     * Updates the hourly forecast TextView.
-     */
-    private void updateHourlyForecast(List<WeatherHourlyEntity> hourlyForecast) {
+    // Exit loop if today is found?
+    private void updateDailyForecast(List<WeatherDailyEntity> dailyForecast) {
+        Log.d("WeatherDetailsFragment", "Updating weather UI current entity");
+        if (dailyForecast != null && !dailyForecast.isEmpty()) {
+            Log.d("WeatherDetailsFragment", "Updating weather UI current entity (INSIDE IF)");
+            for (WeatherDailyEntity daily : dailyForecast) {
+                boolean isToday = findOutIfToday(daily);
+                if (isToday) {
+                    minTemp.setText(String.format("Min Temperature: %.1f°C", daily.getTempMin()));
+                    maxTemp.setText(String.format("Max Temperature: %.1f°C", daily.getTempMax()));
+
+                    rainProbability.setText(String.format("Rain Probability: %.1f%%", daily.getProbabilityOfPrecipitation() * 100));
+                    if (isRaining(daily)) {
+                        rain.setText(String.format("Rain: %.1fmm", daily.getRain()));
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean findOutIfToday(WeatherDailyEntity daily) {
+        LocalDate today = LocalDate.now();
+
+        // Timestamp of the API -> LocalDate
+        LocalDate forecastDate = Instant.ofEpochSecond(daily.getTimestamp())
+                .atZone(ZoneId.systemDefault()) // System default zone
+                .toLocalDate();
+
+        Log.d("WeatherDetailsFragment", "Today: " + today + " | Forecast Date: " + forecastDate + " | Is Today? " + today.isEqual(forecastDate));
+
+        return today.isEqual(forecastDate);
+    }
+
+
+    private boolean isRaining(WeatherDailyEntity daily) {
+        // If the value of rain is anything other than 0.0, then it means it will probably rain
+        return daily.getRain() != 0.0;
+    }
+
+    /*private void updateHourlyForecast(List<WeatherHourlyEntity> hourlyForecast) {
         StringBuilder hourlyText = new StringBuilder("Hourly Forecast:\n");
         for (WeatherHourlyEntity hourly : hourlyForecast) {
             hourlyText.append(String.format("%d:00 - %.1f°C, %s\n", hourly.getTimestamp(), hourly.getTemperature(), hourly.getWeatherDescription()));
         }
-        hourlyForecastTextView.setText(hourlyText.toString());
     }
 
-    /**
-     * Updates the daily forecast TextView.
-     */
     private void updateDailyForecast(List<WeatherDailyEntity> dailyForecast) {
         StringBuilder dailyText = new StringBuilder("Daily Forecast:\n");
         for (WeatherDailyEntity daily : dailyForecast) {
             dailyText.append(String.format("Day %d - Min: %.1f°C, Max: %.1f°C, %s\n",
                     daily.getTimestamp(), daily.getTempMin(), daily.getTempMax(), daily.getWeatherDescription()));
         }
-        dailyForecastTextView.setText(dailyText.toString());
-    }
+    }*/
 
     private void setUpCharts(List<WeatherDailyEntity> dailyForecast) {
         setUpTemperatureChart(dailyForecast);

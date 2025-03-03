@@ -1,11 +1,13 @@
 package com.example.weebther.UI.Adapters;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +34,8 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
     private final OnCityClickListener onCityClickListener;
     private final OnCityClickListener onRefreshClickListener;
     private final LifecycleOwner lifecycleOwner;
+
+    private String originalIconName;
 
     public CityAdapter(WeatherViewModel weatherViewModel, List<City> cityList, OnCityClickListener onCityClickListener, OnCityClickListener onRefreshClickListener, LifecycleOwner lifecycleOwner) {
         this.weatherViewModel = weatherViewModel;
@@ -85,13 +89,17 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
     public void onBindViewHolder(@NonNull CityViewHolder holder, int position) {
         City city = cityList.get(position);
         holder.cityNameTextView.setText(city.getName());
+        holder.cityCountryTextView.setText(city.getCountry());
 
-        // 🔹 Usamos LifecycleOwner para evitar fugas de memoria
         weatherViewModel.getWeatherLiveData(city.getName()).observe(lifecycleOwner, weatherResponse -> {
             if (weatherResponse != null) {
                 Log.d("CityAdapter", "Updating weather for " + city.getName());
+                // Temperature, weather description and the corresponding icon
                 holder.temperatureTextView.setText(String.format("%.1f°C", weatherResponse.getTemperature()));
                 holder.descriptionTextView.setText(weatherResponse.getWeatherDescription());
+
+                int iconRes = getWeatherIconResource(holder.itemView.getContext(), weatherResponse.getWeatherIcon(), weatherResponse.getWeatherDescription());
+                holder.weatherIconImageView.setImageResource(iconRes);
             } else {
                 holder.temperatureTextView.setText("--°C");
                 holder.descriptionTextView.setText("No data");
@@ -136,18 +144,38 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
         }
     }
 
+    private int getWeatherIconResource(Context context, String iconName, String weatherDescription) {
+        Log.d("CityAdapter", "Icon name: " + iconName);
+        // Removes the last character (d or n) to build the icon name (01d | 01n -> _01)
+        String resourceName = "_" + iconName.substring(0, 2) + "d";
+
+        boolean isThunderStorm = iconName.equals("11d") || iconName.equals("11n");
+        boolean isRain = weatherDescription.toLowerCase().contains("drizzle") || weatherDescription.toLowerCase().contains("rain");
+        if (isThunderStorm && isRain) resourceName = "_storm_rain";
+
+        Log.d("CityAdapter", "My icon name: " + resourceName);
+
+        // Obtains the resource ID to set the ImageView in the Binder
+        int resourceID = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
+        return resourceID;
+    }
+
 
     public static class CityViewHolder extends RecyclerView.ViewHolder {
         TextView cityNameTextView;
+        TextView cityCountryTextView;
         TextView temperatureTextView;
         TextView descriptionTextView;
+        ImageView weatherIconImageView;
         ImageButton refreshButton;
 
         public CityViewHolder(View itemView) {
             super(itemView);
             cityNameTextView = itemView.findViewById(R.id.cityNameTextView);
+            cityCountryTextView = itemView.findViewById(R.id.cityCountryTextView);
             temperatureTextView = itemView.findViewById(R.id.temperatureTextView);
             descriptionTextView = itemView.findViewById(R.id.weatherDescriptionTextView);
+            weatherIconImageView = itemView.findViewById(R.id.weatherIconImageView);
             refreshButton = itemView.findViewById(R.id.refreshWeatherButton);
         }
     }

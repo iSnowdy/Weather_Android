@@ -75,6 +75,7 @@ public class WeatherResponse {
                 current.temperature,
                 current.feelsLike,
                 current.humidity,
+                current.uvi,
                 current.windSpeed,
                 current.weatherConditions.get(0).description,
                 current.weatherConditions.get(0).icon,

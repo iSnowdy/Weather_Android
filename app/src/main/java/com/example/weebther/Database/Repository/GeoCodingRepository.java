@@ -82,7 +82,7 @@ public class GeoCodingRepository {
             public void onResponse(Call<List<GeoCodingResponse>> call, Response<List<GeoCodingResponse>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     GeoCodingResponse geoResponse = response.body().get(0);
-                    City city = new City(cityName, "Unknown", geoResponse.getLatitude(), geoResponse.getLongitude(), false, System.currentTimeMillis());
+                    City city = new City(cityName, geoResponse.getCountry(), geoResponse.getLatitude(), geoResponse.getLongitude(), false, System.currentTimeMillis());
 
                     storeCity(city); // Store city asynchronously
 

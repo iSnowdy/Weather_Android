@@ -5,13 +5,10 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 // Represents "current" weather in the JSON file
-// TODO: Make it so that it has a historic, but delete it once x amount of time has passed
-// TODO: Method to parse weatherIcon String to my own icon
-// TODO: Weather description is in all lower case. Need to capitalize it
 
 @Entity(tableName = "weather_current")
 public class WeatherCurrentEntity {
-    // City ID is the PK for weather as well. This is done so each city has its own weather
+    // City ID is the PK for weather. This is done so each city has its own weather
     // Also, when setting it to false we will be replacing the old weather with the new one
     // If I did not do this, the DB would increase in size very fast
     @PrimaryKey(autoGenerate = false)
@@ -20,20 +17,21 @@ public class WeatherCurrentEntity {
     private float temperature;
     private float feelsLike;
     private int humidity;
+    private float uvi;
     private float windSpeed;
     private String weatherDescription;
     private String weatherIcon;
     private long lastUpdated;
 
-
     public WeatherCurrentEntity(final String cityName, float temperature,
-                                float feelsLike, int humidity,
+                                float feelsLike, int humidity, float uvi,
                                 float windSpeed, String weatherDescription,
                                 String weatherIcon, long lastUpdated) {
         this.cityName = cityName;
         this.temperature = temperature;
         this.feelsLike = feelsLike;
         this.humidity = humidity;
+        this.uvi = uvi;
         this.windSpeed = windSpeed;
         this.weatherDescription =
                 weatherDescription.substring(0, 1).toUpperCase() + weatherDescription.substring(1);
@@ -48,6 +46,7 @@ public class WeatherCurrentEntity {
                 "\nTemperature: " + temperature + "°C" +
                 "\nFeels Like: " + feelsLike + "°C" +
                 "\nHumidity: " + humidity + "%" +
+                "\nUV Index: " + uvi +
                 "\nWind Speed: " + windSpeed + " m/s" +
                 "\nWeather Description: " + weatherDescription +
                 "\nWeather Icon: " + weatherIcon +
@@ -86,6 +85,14 @@ public class WeatherCurrentEntity {
 
     public void setHumidity(int humidity) {
         this.humidity = humidity;
+    }
+
+    public float getUvi() {
+        return uvi;
+    }
+
+    public void setUvi(float uvi) {
+        this.uvi = uvi;
     }
 
     public float getWindSpeed() {
