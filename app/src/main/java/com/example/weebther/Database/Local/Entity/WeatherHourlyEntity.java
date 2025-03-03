@@ -12,13 +12,15 @@ public class WeatherHourlyEntity {
     private long timestamp;
     private float temperature;
     private int humidity;
+    private float probabilityOfPrecipitation;
     private String weatherDescription;
 
-    public WeatherHourlyEntity(String cityName, long timestamp, float temperature, int humidity, String weatherDescription) {
+    public WeatherHourlyEntity(String cityName, long timestamp, float temperature, int humidity, float probabilityOfPrecipitation, String weatherDescription) {
         this.cityName = cityName;
         this.timestamp = timestamp;
         this.temperature = temperature;
         this.humidity = humidity;
+        this.probabilityOfPrecipitation = probabilityOfPrecipitation;
         this.weatherDescription = weatherDescription;
 
         // Generates a unique ID based on the city and timestamp. Needed to have a combined PK to store historic data
@@ -65,6 +67,15 @@ public class WeatherHourlyEntity {
     public void setHumidity(int humidity) {
         this.humidity = humidity;
     }
+
+    public float getProbabilityOfPrecipitation() {
+        return probabilityOfPrecipitation;
+    }
+
+    public void setProbabilityOfPrecipitation(float probabilityOfPrecipitation) {
+        this.probabilityOfPrecipitation = probabilityOfPrecipitation;
+    }
+
 
     public String getWeatherDescription() {
         return weatherDescription;

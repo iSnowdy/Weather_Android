@@ -1,5 +1,6 @@
 package com.example.weebther.Database.Local;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -36,13 +37,11 @@ public interface CityDAO {
 
     // Retrieves the last x amount of cities from the DB
     @Query("SELECT * FROM cities ORDER BY lastUpdated DESC LIMIT :limit")
-    List<City> getCitiesByLastAccessed(int limit);
+    LiveData<List<City>> getCitiesByLastAccessed(int limit);
 
     @Query("SELECT * FROM cities WHERE name = :cityName")
-    Optional<City> getCity(String cityName);
+    LiveData<City> getCity(String cityName);
 
     @Query("SELECT * FROM cities")
-    List<City> getCities();
-
-    // TODO: Testing methods. Remove later on. SELECT * from all entities
+    LiveData<List<City>> getCities();
 }

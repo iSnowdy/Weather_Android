@@ -26,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //this.deleteDatabase("weather_database"); // BE CAREFUL!! This deletes ALL data in the DB
+
         setContentView(R.layout.activity_main);
 
         setupToolbar();

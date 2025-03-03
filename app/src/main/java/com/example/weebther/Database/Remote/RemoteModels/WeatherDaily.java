@@ -15,14 +15,18 @@ public class WeatherDaily {
     public int humidity;
     @SerializedName("weather")
     public List<WeatherCondition> weatherConditions;
+    @SerializedName("pop")
+    public float probabilityOfPrecipitation;
+    @SerializedName("rain")
+    public float rain;
 
     // The static keyword allows us to instantiate Temperature without an instance of WeatherDaily
     public static class Temperature {
         @SerializedName("day")
-        public double day;
+        public float day;
         @SerializedName("min")
-        public double min;
+        public float min;
         @SerializedName("max")
-        public double max;
+        public float max;
     }
 }

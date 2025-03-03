@@ -3,6 +3,8 @@ package com.example.weebther.Database.Repository;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.lifecycle.Observer;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -50,16 +52,20 @@ public class GeoCodingRepository {
      * @param callback The callback returning a {@link City} object or an error.
      */
     public void getCity(String cityName, GeoCodingCallBack callback) {
-        executorService.execute(() -> {
-            Optional<City> optionalCity = cityDAO.getCity(cityName);
-            if (optionalCity.isPresent()) {
-                Log.d("GeoCodingRepository", "Using cached city: " + cityName);
-                callback.onSuccess(optionalCity.get());
-            } else {
-                fetchCityFromAPI(cityName, callback);
+        cityDAO.getCity(cityName).observeForever(new Observer<City>() {
+            @Override
+            public void onChanged(City city) {
+                if (city != null) {
+                    Log.d("GeoCodingRepository", "Using cached city: " + cityName);
+                    callback.onSuccess(city);
+                } else {
+                    fetchCityFromAPI(cityName, callback);
+                }
+                cityDAO.getCity(cityName).removeObserver(this);
             }
         });
     }
+
 
     /**
      * Calls the GeoCoding API to fetch city data.

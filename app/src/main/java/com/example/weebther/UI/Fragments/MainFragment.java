@@ -23,10 +23,6 @@ import com.example.weebther.UI.ViewModels.WeatherViewModel;
 
 import java.util.ArrayList;
 
-/**
- * Main fragment that displays the search bar and RecyclerView with cities.
- * Handles user interaction for searching and refreshing weather data.
- */
 
 public class MainFragment extends Fragment {
     private WeatherViewModel weatherViewModel;
@@ -52,54 +48,30 @@ public class MainFragment extends Fragment {
         return view;
     }
 
-    /**
-     * Sets up RecyclerView with CityAdapter.
-     */
     private void setUpRecyclerView() {
-        cityAdapter = new CityAdapter(new ArrayList<>(), this::openWeatherDetails, this::refreshWeather);
+        cityAdapter = new CityAdapter(weatherViewModel, new ArrayList<>(), this::openWeatherDetails, this::refreshWeather, getViewLifecycleOwner());
         recyclerView.setAdapter(cityAdapter);
 
-        // Observe the list of recent cities
         weatherViewModel.getRecentCities().observe(getViewLifecycleOwner(), cities -> {
             if (cities != null) {
-                cityAdapter.updateCitiesData(cities);
+                Log.d("MainFragment", "UI received " + cities.size() + " cities.");
+                cityAdapter.updateCitiesData(new ArrayList<>(cities));
             }
         });
     }
 
-    /**
-     * Opens detailed weather view for a city.
-     *
-     * @param city The selected city.
-     */
+    // This method is passed as an OnClickListener to the CityAdapter so that when the user
+    // clicks on a city, the details fragment is opened
     private void openWeatherDetails(City city) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("city", city);
         Navigation.findNavController(requireView()).navigate(R.id.weatherDetailsFragment, bundle);
     }
 
-    /**
-     * Refreshes the weather data for a city.
-     *
-     * @param city The city to refresh.
-     */
-
     private void refreshWeather(City city) {
-        Log.d("MainFragment", "Refreshing weather for " + city.getName());
-
-        weatherViewModel.refreshWeather(city.getName(), city.getLatitude(), city.getLongitude())
-                .observe(getViewLifecycleOwner(), weatherResponse -> {
-                    if (weatherResponse != null) {
-                        Toast.makeText(requireContext(), "Weather updated for " + city.getName(), Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(requireContext(), "Failed to update weather!", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        weatherViewModel.refreshWeather(city.getName(), city.getLatitude(), city.getLongitude());
+        Toast.makeText(requireContext(), "Weather updating for " + city.getName(), Toast.LENGTH_SHORT).show();
     }
-
-    /**
-     * Sets up the search bar to look for cities.
-     */
 
     private void setUpSearchView() {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -117,32 +89,13 @@ public class MainFragment extends Fragment {
         });
     }
 
-    /**
-     * Searches for a city using GeoCoding API and fetches weather data if found.
-     */
     private void searchCity(String cityName) {
         weatherViewModel.fetchWeatherByCity(cityName);
-
-        weatherViewModel.getWeatherLiveData().observe(getViewLifecycleOwner(), new Observer<WeatherResponse>() {
-            @Override
-            public void onChanged(WeatherResponse weatherResponse) {
-                if (weatherResponse != null) {
-                    Log.d("MainFragment", "Weather found for city: " + cityName);
-
-                    // Already stored in DB by GeoCodingRepository, no need to re-create City.
-                    weatherViewModel.updateLastAccessed(cityName);
-
-                    // Remove observer to avoid repeated triggers
-                    weatherViewModel.getWeatherLiveData().removeObserver(this);
-                }
-            }
-        });
-
-        // Observe errors
-        weatherViewModel.getGeoErrorLiveData().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                Log.e("MainFragment", "Error: " + error);
-                Toast.makeText(requireContext(), "City not found!", Toast.LENGTH_SHORT).show();
+        weatherViewModel.getWeatherLiveData(cityName).removeObservers(getViewLifecycleOwner());
+        weatherViewModel.getWeatherLiveData(cityName).observe(getViewLifecycleOwner(), weatherResponse -> {
+            if (weatherResponse != null) {
+                Log.d("MainFragment", "Weather found for city: " + cityName);
+                weatherViewModel.updateLastAccessed(cityName);
             }
         });
     }

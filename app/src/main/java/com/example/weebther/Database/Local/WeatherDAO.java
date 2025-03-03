@@ -1,5 +1,6 @@
 package com.example.weebther.Database.Local;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -24,13 +25,13 @@ public interface WeatherDAO {
     void storeDailyWeather(List<WeatherDailyEntity> daily);
 
     @Query("SELECT * FROM weather_current WHERE cityName = :cityName LIMIT 1")
-    Optional<WeatherCurrentEntity> getLatestWeatherForCity(String cityName);
+    LiveData<WeatherCurrentEntity> getLatestWeatherForCity(String cityName);
 
     @Query("SELECT * FROM weather_hourly WHERE cityName = :cityName ORDER BY timestamp ASC")
-    List<WeatherHourlyEntity> getHourlyForecast(String cityName);
+    LiveData<List<WeatherHourlyEntity>> getHourlyForecast(String cityName);
 
     @Query("SELECT * FROM weather_daily WHERE cityName = :cityName ORDER BY timestamp ASC")
-    List<WeatherDailyEntity> getDailyForecast(String cityName);
+    LiveData<List<WeatherDailyEntity>> getDailyForecast(String cityName);
 
     // "Normal" DELETE methods
     @Query("DELETE FROM weather_current WHERE cityName = :cityName")
@@ -51,6 +52,4 @@ public interface WeatherDAO {
 
     @Query("DELETE FROM weather_daily WHERE timestamp < :timeStampToDelete")
     int deleteOldDailyWeather(long timeStampToDelete);
-
-    // TODO: Test methods. Delete later on. SELECT * from all entities
 }

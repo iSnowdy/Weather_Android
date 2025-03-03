@@ -13,14 +13,19 @@ public class WeatherDailyEntity {
     private float tempMin;
     private float tempMax;
     private int humidity;
+    private float probabilityOfPrecipitation;
+    private float rain;
     private String weatherDescription;
 
-    public WeatherDailyEntity(String cityName, long timestamp, float tempMin, float tempMax, int humidity, String weatherDescription) {
+    public WeatherDailyEntity(String cityName, long timestamp, float tempMin, float tempMax,
+                              int humidity, float probabilityOfPrecipitation, float rain, String weatherDescription) {
         this.cityName = cityName;
         this.timestamp = timestamp;
         this.tempMin = tempMin;
         this.tempMax = tempMax;
         this.humidity = humidity;
+        this.probabilityOfPrecipitation = probabilityOfPrecipitation;
+        this.rain = rain;
         this.weatherDescription = weatherDescription;
 
         this.id = (cityName + timestamp).hashCode();
@@ -74,6 +79,22 @@ public class WeatherDailyEntity {
 
     public void setHumidity(int humidity) {
         this.humidity = humidity;
+    }
+
+    public float getProbabilityOfPrecipitation() {
+        return probabilityOfPrecipitation;
+    }
+
+    public void setProbabilityOfPrecipitation(float probabilityOfPrecipitation) {
+        this.probabilityOfPrecipitation = probabilityOfPrecipitation;
+    }
+
+    public float getRain() {
+        return rain;
+    }
+
+    public void setRain(float rain) {
+        this.rain = rain;
     }
 
     public String getWeatherDescription() {

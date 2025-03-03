@@ -11,9 +11,11 @@ public class WeatherHourly {
     @SerializedName("dt")
     public long timestamp;
     @SerializedName("temp")
-    public double temperature;
+    public float temperature;
     @SerializedName("humidity")
     public int humidity;
     @SerializedName("weather")
     public List<WeatherCondition> weatherConditions;
+    @SerializedName("pop")
+    public float probabilityOfPrecipitation;
 }

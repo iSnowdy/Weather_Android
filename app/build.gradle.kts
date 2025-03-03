@@ -38,6 +38,8 @@ android {
     }
 }
 
+
+
 dependencies {
 
     implementation(libs.appcompat)
@@ -58,4 +60,5 @@ dependencies {
     implementation (libs.navigation.fragment.ktx)
     implementation (libs.navigation.ui.ktx)
     implementation (libs.work.runtime)
+    implementation (libs.mpandroidchart)
 }

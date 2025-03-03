@@ -37,8 +37,9 @@ public class WeatherResponse {
                 hourlyEntities.add(new WeatherHourlyEntity(
                         cityName,
                         weatherHoulyApi.timestamp,
-                        (float) weatherHoulyApi.temperature,
+                        weatherHoulyApi.temperature,
                         weatherHoulyApi.humidity,
+                        weatherHoulyApi.probabilityOfPrecipitation,
                         weatherHoulyApi.weatherConditions.get(0).description
                 ));
             }
@@ -54,9 +55,11 @@ public class WeatherResponse {
                 dailyEntities.add(new WeatherDailyEntity(
                         cityName,
                         weatherDailyApi.timestamp,
-                        (float) weatherDailyApi.temperature.min,
-                        (float) weatherDailyApi.temperature.max,
+                        weatherDailyApi.temperature.min,
+                        weatherDailyApi.temperature.max,
                         weatherDailyApi.humidity,
+                        weatherDailyApi.probabilityOfPrecipitation,
+                        weatherDailyApi.rain,
                         weatherDailyApi.weatherConditions.get(0).description
                 ));
             }
@@ -69,10 +72,10 @@ public class WeatherResponse {
     public WeatherCurrentEntity getCurrentEntity(String cityName) {
         return new WeatherCurrentEntity(
                 cityName,
-                (float) current.temperature,
-                (float) current.feelsLike,
+                current.temperature,
+                current.feelsLike,
                 current.humidity,
-                (float) current.windSpeed,
+                current.windSpeed,
                 current.weatherConditions.get(0).description,
                 current.weatherConditions.get(0).icon,
                 System.currentTimeMillis()

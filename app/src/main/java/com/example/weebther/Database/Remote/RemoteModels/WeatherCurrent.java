@@ -8,23 +8,23 @@ public class WeatherCurrent {
     @SerializedName("dt")
     public long timestamp;
     @SerializedName("temp")
-    public double temperature;
+    public float temperature;
     @SerializedName("feels_like")
-    public double feelsLike;
+    public float feelsLike;
     @SerializedName("pressure")
     public int pressure;
     @SerializedName("humidity")
     public int humidity;
     @SerializedName("uvi")
-    public double uvi;
+    public float uvi;
     @SerializedName("visibility")
     public int visibility;
     @SerializedName("wind_speed")
-    public double windSpeed;
+    public float windSpeed;
     @SerializedName("wind_deg")
     public int windDeg;
     @SerializedName("wind_gust")
-    public double windGust;
+    public float windGust;
     @SerializedName("weather")
     public List<WeatherCondition> weatherConditions;
 }

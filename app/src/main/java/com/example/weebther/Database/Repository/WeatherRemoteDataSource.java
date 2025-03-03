@@ -27,12 +27,15 @@ public class WeatherRemoteDataSource {
      * @param apiKey    OpenWeather API Key.
      * @param callback  Callback to return weather data or an error.
      */
+
     public void fetchWeather(double latitude, double longitude, String apiKey, WeatherCallBack callback) {
         weatherService.getWeather(latitude, longitude, apiKey, "metric").enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
+                    Log.d("WeatherRemoteDataSource", "Calling OpenWeather API for: " + latitude + ", " + longitude);
+
                 } else {
                     handleAPIError(response, callback);
                 }

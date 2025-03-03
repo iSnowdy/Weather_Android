@@ -3,18 +3,15 @@ package com.example.weebther.Database.Repository;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.weebther.Database.Local.Entity.City;
 import com.example.weebther.Database.Local.Entity.WeatherCurrentEntity;
+import com.example.weebther.Database.Local.Entity.WeatherDailyEntity;
+import com.example.weebther.Database.Local.Entity.WeatherHourlyEntity;
 import com.example.weebther.Database.Remote.WeatherCallBack;
-import com.example.weebther.Database.Remote.RemoteModels.WeatherCondition;
-import com.example.weebther.Database.Remote.RemoteModels.WeatherCurrent;
 import com.example.weebther.Database.Remote.RemoteModels.WeatherResponse;
 import com.example.weebther.Exceptions.OpenWeatherException;
 
@@ -26,13 +23,11 @@ import java.util.concurrent.Executors;
  * Repository class that handles weather data retrieval from both local storage (Room) and remote API (OpenWeather).
  * Ensures caching, API calls optimization, and network checking.
  */
-
 public class WeatherRepository {
     private final WeatherRemoteDataSource remoteDataSource;
     private final WeatherLocalDataSource localDataSource;
     private final String apiKey;
     private final ExecutorService executorService;
-    private final Handler mainHandler;
     private final Context context;
 
     /**
@@ -46,46 +41,25 @@ public class WeatherRepository {
         this.localDataSource = new WeatherLocalDataSource(context);
         this.apiKey = apiKey;
         this.executorService = Executors.newSingleThreadExecutor();
-        this.mainHandler = new Handler(Looper.getMainLooper()); // Ensure we can run on main thread
         this.context = context;
     }
 
     /**
-     * Fetches weather data with caching logic.
-     * If cached data is available, it returns it. Otherwise, it fetches from the API and stores it in the database.
+     * Retrieves weather data from cache first. If not available, fetches from API.
      *
-     * @param cityName  The name of the city
-     * @param latitude  Latitude coordinate of the city
-     * @param longitude Longitude coordinate of the city
-     * @return LiveData containing {@link WeatherResponse} with weather details
+     * @param cityName The name of the city
+     * @return LiveData containing {@link WeatherCurrentEntity} with weather details
      */
-    public LiveData<WeatherResponse> getWeather(String cityName, double latitude, double longitude) {
-        MutableLiveData<WeatherResponse> liveData = new MutableLiveData<>();
+    public LiveData<WeatherCurrentEntity> getCurrentWeather(String cityName) {
+        return localDataSource.getLatestWeather(cityName);
+    }
 
-        executorService.execute(() -> {
-            LiveData<WeatherCurrentEntity> cachedWeatherLiveData = localDataSource.getLatestWeather(cityName);
+    public LiveData<List<WeatherHourlyEntity>> getHourlyForecast(String cityName) {
+        return localDataSource.getHourlyEntities(cityName);
+    }
 
-            mainHandler.post(() -> cachedWeatherLiveData.observeForever(cachedWeather -> {
-                if (cachedWeather != null) {
-
-                    Log.d("WeatherRepository", "Using cached weather data for " + cityName);
-                    System.err.println("CACHE: City Name: " + cityName + ", Latitude: " + latitude + ", Longitude: " + longitude);
-
-                    // Use cached data if available
-                    WeatherResponse cachedResponse = buildWeatherResponseFromCache(cityName, latitude, longitude, cachedWeather);
-                    liveData.postValue(cachedResponse);
-                } else {
-                    Log.d("WeatherRepository", "No cached weather data for " + cityName);
-                    System.err.println("NO CACHE: City Name: " + cityName + ", Latitude: " + latitude + ", Longitude: " + longitude);
-
-
-                    // If no cache, check for internet connection and fetch from API
-                    fetchWeatherFromAPI(cityName, latitude, longitude, liveData);
-                }
-            }));
-        });
-
-        return liveData;
+    public LiveData<List<WeatherDailyEntity>> getDailyForecast(String cityName) {
+        return localDataSource.getDailyEntities(cityName);
     }
 
     /**
@@ -94,14 +68,9 @@ public class WeatherRepository {
      * @param cityName  The name of the city
      * @param latitude  Latitude coordinate of the city
      * @param longitude Longitude coordinate of the city
-     * @return LiveData containing fresh {@link WeatherResponse} data
      */
-    public LiveData<WeatherResponse> refreshWeather(String cityName, double latitude, double longitude) {
-        MutableLiveData<WeatherResponse> liveData = new MutableLiveData<>();
-
-        executorService.execute(() -> fetchWeatherFromAPI(cityName, latitude, longitude, liveData));
-
-        return liveData;
+    public void refreshWeather(String cityName, double latitude, double longitude) {
+        executorService.execute(() -> fetchWeatherFromAPI(cityName, latitude, longitude));
     }
 
     /**
@@ -111,25 +80,19 @@ public class WeatherRepository {
      * @param cityName  The name of the city
      * @param latitude  Latitude coordinate
      * @param longitude Longitude coordinate
-     * @param liveData  LiveData object to update the UI
      */
-    private void fetchWeatherFromAPI(String cityName, double latitude, double longitude, MutableLiveData<WeatherResponse> liveData) {
+    private void fetchWeatherFromAPI(String cityName, double latitude, double longitude) {
         if (!isInternetAvailable()) {
-            mainHandler.post(() -> liveData.setValue(null));
+            Log.w("WeatherRepository", "No internet connection. Skipping API call.");
             return;
         }
 
         remoteDataSource.fetchWeather(latitude, longitude, apiKey, new WeatherCallBack() {
             @Override
             public void onSuccess(WeatherResponse response) {
+                Log.d("WeatherRepository", "Weather data fetched from API for " + cityName);
 
-                Log.d("WeatherRemoteDataSource", "OpenWeather API Response: "
-                        + "Temp: " + response.current.temperature
-                        + ", Humidity: " + response.current.humidity
-                        + ", Weather: " + response.current.weatherConditions.get(0).description);
-
-                mainHandler.post(() -> liveData.setValue(response));
-
+                // Store the weather data in Room
                 executorService.execute(() -> localDataSource.storeWeatherData(
                         response.getCurrentEntity(cityName),
                         response.getHourlyEntities(cityName),
@@ -139,36 +102,9 @@ public class WeatherRepository {
 
             @Override
             public void onError(OpenWeatherException openWeatherException, Throwable throwable) {
-                mainHandler.post(() -> liveData.setValue(null));
+                Log.e("WeatherRepository", "Error fetching weather data: " + openWeatherException.getMessage());
             }
         });
-    }
-
-    /**
-     * Builds a {@link WeatherResponse} from cached Room data.
-     *
-     * @param cityName      The name of the city
-     * @param latitude      Latitude coordinate
-     * @param longitude     Longitude coordinate
-     * @param cachedWeather The cached weather data from Room
-     * @return A {@link WeatherResponse} containing the cached weather data
-     */
-    private WeatherResponse buildWeatherResponseFromCache(String cityName, double latitude, double longitude, WeatherCurrentEntity cachedWeather) {
-        if (cachedWeather == null) {
-            return null;
-        }
-
-        WeatherResponse cachedResponse = new WeatherResponse();
-        cachedResponse.latitude = latitude;
-        cachedResponse.longitude = longitude;
-        cachedResponse.current = new WeatherCurrent();
-        cachedResponse.current.temperature = cachedWeather.getTemperature();
-        cachedResponse.current.feelsLike = cachedWeather.getFeelsLike();
-        cachedResponse.current.humidity = cachedWeather.getHumidity();
-        cachedResponse.current.windSpeed = cachedWeather.getWindSpeed();
-        cachedResponse.current.weatherConditions = List.of(new WeatherCondition(cachedWeather.getWeatherDescription(), cachedWeather.getWeatherIcon()));
-
-        return cachedResponse;
     }
 
     /**
@@ -178,6 +114,7 @@ public class WeatherRepository {
      * @param isFavorite True to mark as favorite, false otherwise
      */
     public void toggleCityFavorite(String cityName, boolean isFavorite) {
+        Log.d("WeatherRepository", "Toggling city favorite: " + cityName + " to " + isFavorite);
         executorService.execute(() -> localDataSource.toggleCityFavourite(cityName, isFavorite));
     }
 
@@ -191,6 +128,16 @@ public class WeatherRepository {
             long now = System.currentTimeMillis();
             localDataSource.updateLastAccessedCity(cityName, now);
         });
+    }
+
+    /**
+     * Retrieves a city from the database.
+     *
+     * @param cityName Name of the city
+     * @return LiveData containing the city
+     */
+    public LiveData<City> getCity(String cityName) {
+        return localDataSource.getCity(cityName);
     }
 
     /**

@@ -33,6 +33,7 @@ public class WeatherLocalDataSource {
     }
 
     public void storeWeatherData(WeatherCurrentEntity current, List<WeatherHourlyEntity> hourly, List<WeatherDailyEntity> daily) {
+        Log.d("WeatherLocalDataSource", "Storing weather data for city: " + current.getCityName() + ". Temp: " + current.getTemperature());
         executorService.execute(() -> {
             weatherDAO.storeWeather(current);
             weatherDAO.storeHourlyWeather(hourly);
@@ -41,37 +42,15 @@ public class WeatherLocalDataSource {
     }
 
     public LiveData<WeatherCurrentEntity> getLatestWeather(String cityName) {
-        MutableLiveData<WeatherCurrentEntity> liveData = new MutableLiveData<>();
-        executorService.execute(() -> {
-            Optional<WeatherCurrentEntity> optionalWeather = weatherDAO.getLatestWeatherForCity(cityName);
-            if (optionalWeather.isPresent()) {
-                liveData.postValue(optionalWeather.get());
-
-            } else {
-                Log.w("WeatherLocalDataSource", "No weather data found for city: " + cityName);
-                // Instead of throwing an exception so that we don't potentially crash the app
-                liveData.postValue(null); //
-            }
-        });
-        return liveData;
+        return weatherDAO.getLatestWeatherForCity(cityName);
     }
 
     public LiveData<List<WeatherHourlyEntity>> getHourlyEntities(String cityName) {
-        MutableLiveData<List<WeatherHourlyEntity>> liveData = new MutableLiveData<>();
-        executorService.execute(() -> {
-            List<WeatherHourlyEntity> hourlyData = weatherDAO.getHourlyForecast(cityName);
-            liveData.postValue(hourlyData);
-        });
-        return liveData;
+        return weatherDAO.getHourlyForecast(cityName);
     }
 
     public LiveData<List<WeatherDailyEntity>> getDailyEntities(String cityName) {
-        MutableLiveData<List<WeatherDailyEntity>> liveData = new MutableLiveData<>();
-        executorService.execute(() -> {
-            List<WeatherDailyEntity> dailyData = weatherDAO.getDailyForecast(cityName);
-            liveData.postValue(dailyData);
-        });
-        return liveData;
+        return weatherDAO.getDailyForecast(cityName);
     }
 
     public void toggleCityFavourite(String cityName, boolean isFavourite) {
@@ -82,15 +61,12 @@ public class WeatherLocalDataSource {
         executorService.execute(() -> cityDAO.updateLastAccessed(cityName, lastUpdated));
     }
 
+    public LiveData<City> getCity(String cityName) {
+        return cityDAO.getCity(cityName);
+    }
+
     public LiveData<List<City>> getRecentCities(int limit) {
-        MutableLiveData<List<City>> liveData = new MutableLiveData<>();
-
-        executorService.execute(() -> {
-            List<City> cities = cityDAO.getCitiesByLastAccessed(limit);
-            liveData.postValue(cities);
-        });
-
-        return liveData;
+        return cityDAO.getCitiesByLastAccessed(limit);
     }
 
 
