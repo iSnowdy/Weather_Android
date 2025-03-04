@@ -60,7 +60,8 @@ public class WeatherResponse {
                         weatherDailyApi.humidity,
                         weatherDailyApi.probabilityOfPrecipitation,
                         weatherDailyApi.rain,
-                        weatherDailyApi.weatherConditions.get(0).description
+                        weatherDailyApi.weatherConditions.get(0).description,
+                        weatherDailyApi.weatherConditions.get(0).icon
                 ));
             }
 

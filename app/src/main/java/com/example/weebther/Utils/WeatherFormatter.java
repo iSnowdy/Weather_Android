@@ -22,7 +22,7 @@ public class WeatherFormatter {
                 return String.format("%.1f%s", convertTemperature(value, unitSystem), unitSystem == UnitSystem.METRIC ? "°C" : "°F");
 
             case WIND_SPEED:
-                return String.format("%.1f %s", convertWindSpeed(value, unitSystem), unitSystem == UnitSystem.METRIC ? "m/s" : "mph");
+                return String.format("%.1f %s", convertWindSpeed(value, unitSystem), unitSystem == UnitSystem.METRIC ? "m/s" : "mp/h");
 
             case RAIN_VOLUME:
                 return value > 0 ? String.format("%.1f mm", value) : "No rain";
@@ -31,7 +31,7 @@ public class WeatherFormatter {
                 return String.format("%.1f%%", value * 100);
 
             case UV_INDEX:
-                return String.format("UV Index: %.1f", value);
+                return String.format("%.1f", value);
 
             default:
                 return String.valueOf(value);

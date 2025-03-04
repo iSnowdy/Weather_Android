@@ -11,9 +11,7 @@
         android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
+        android:background="@drawable/search_bar_bg"
         android:queryHint="@string/searchEditTextHint"
         app:iconifiedByDefault="false" />
 

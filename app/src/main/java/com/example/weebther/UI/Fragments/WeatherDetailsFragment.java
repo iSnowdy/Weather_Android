@@ -1,6 +1,7 @@
 package com.example.weebther.UI.Fragments;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -141,16 +142,16 @@ public class WeatherDetailsFragment extends Fragment {
         if (weatherCurrentEntity != null) {
             Log.d("WeatherDetailsFragment", "Updating weather UI current entity");
 
-            temperature.setText("Temperature: " + WeatherFormatter.formatUnit(
+            temperature.setText(WeatherFormatter.formatUnit(
                     requireContext(), weatherCurrentEntity.getTemperature(), WeatherFormatter.UnitType.TEMPERATURE));
-            feelsLike.setText("Feels like: " + WeatherFormatter.formatUnit(
+            feelsLike.setText(WeatherFormatter.formatUnit(
                     requireContext(), weatherCurrentEntity.getFeelsLike(), WeatherFormatter.UnitType.TEMPERATURE));
             description.setText(weatherCurrentEntity.getWeatherDescription());
 
-            humidity.setText("Humidity: " + weatherCurrentEntity.getHumidity() + "%");
+            humidity.setText(weatherCurrentEntity.getHumidity() + "%");
             uvi.setText(WeatherFormatter.formatUnit(
                     requireContext(), weatherCurrentEntity.getUvi(), WeatherFormatter.UnitType.UV_INDEX));
-            windSpeed.setText("Wind: " + WeatherFormatter.formatUnit(
+            windSpeed.setText(WeatherFormatter.formatUnit(
                     requireContext(), weatherCurrentEntity.getWindSpeed(), WeatherFormatter.UnitType.WIND_SPEED));
         }
     }
@@ -237,25 +238,38 @@ public class WeatherDetailsFragment extends Fragment {
         LineDataSet maxTempDataSet = new LineDataSet(maxTempEntries, "Max Temperature");
         minTempDataSet.setColor(0xFF03A9F4); // Blue
         maxTempDataSet.setColor(0xFFFF5722); // Orange
+        minTempDataSet.setValueTextColor(Color.WHITE);
+        maxTempDataSet.setValueTextColor(Color.WHITE);
+
 
         LineData lineData = new LineData(minTempDataSet, maxTempDataSet);
         temperatureChart.setData(lineData);
         temperatureChart.invalidate();
+        temperatureChart.getDescription().setEnabled(false);
+        temperatureChart.getXAxis().setTextColor(Color.WHITE);
+        temperatureChart.getAxisLeft().setTextColor(Color.WHITE);
+        temperatureChart.getAxisRight().setTextColor(Color.WHITE);
+        temperatureChart.getLegend().setTextColor(Color.WHITE);
     }
 
     private void setUpRainChart(List<WeatherDailyEntity> dailyForecast) {
         List<BarEntry> rainEntries = new ArrayList<>();
 
         for (int i = 0; i < dailyForecast.size(); i++) {
-            // Multiplied by 100 to get percentage
-            rainEntries.add(new BarEntry(i, dailyForecast.get(i).getProbabilityOfPrecipitation() * 100));
+            rainEntries.add(new BarEntry(i, dailyForecast.get(i).getProbabilityOfPrecipitation()));
         }
 
         BarDataSet dataSet = new BarDataSet(rainEntries, "Rain Probability (%)");
         dataSet.setColor(0xFF03A9F4); // Blue
+        dataSet.setValueTextColor(Color.WHITE);
 
         BarData barData = new BarData(dataSet);
         rainChart.setData(barData);
         rainChart.invalidate();
+        rainChart.getDescription().setEnabled(false);
+        rainChart.getXAxis().setTextColor(Color.WHITE);
+        rainChart.getAxisLeft().setTextColor(Color.WHITE);
+        rainChart.getAxisRight().setTextColor(Color.WHITE);
+        rainChart.getLegend().setTextColor(Color.WHITE);
     }
 }

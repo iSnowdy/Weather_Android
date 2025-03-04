@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="0dp"
+    android:layout_height="100dp"
+    android:layout_columnWeight="1"
+    android:layout_margin="4dp"
+    app:cardBackgroundColor="@color/cardBackground"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/rain" />
+
+        <TextView
+            style="@style/titleDetailsStyle"
+            android:text="Rainfall" />
+
+        <TextView
+            android:id="@+id/rain"
+            android:text="1.8 mm in last hour"
+            style="@style/subtitleDetailsStyle" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

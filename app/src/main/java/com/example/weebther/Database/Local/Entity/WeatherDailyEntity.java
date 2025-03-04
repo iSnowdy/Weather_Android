@@ -16,9 +16,10 @@ public class WeatherDailyEntity {
     private float probabilityOfPrecipitation;
     private float rain;
     private String weatherDescription;
+    private String weatherIcon;
 
     public WeatherDailyEntity(String cityName, long timestamp, float tempMin, float tempMax,
-                              int humidity, float probabilityOfPrecipitation, float rain, String weatherDescription) {
+                              int humidity, float probabilityOfPrecipitation, float rain, String weatherDescription, String weatherIcon) {
         this.cityName = cityName;
         this.timestamp = timestamp;
         this.tempMin = tempMin;
@@ -27,6 +28,7 @@ public class WeatherDailyEntity {
         this.probabilityOfPrecipitation = probabilityOfPrecipitation;
         this.rain = rain;
         this.weatherDescription = weatherDescription;
+        this.weatherIcon = weatherIcon;
 
         this.id = (cityName + timestamp).hashCode();
         // Generates a unique ID based on the city and timestamp. Needed to have a combined PK to store historic data
@@ -103,5 +105,13 @@ public class WeatherDailyEntity {
 
     public void setWeatherDescription(String weatherDescription) {
         this.weatherDescription = weatherDescription;
+    }
+
+    public String getWeatherIcon() {
+        return weatherIcon;
+    }
+
+    public void setWeatherIcon(String weatherIcon) {
+        this.weatherIcon = weatherIcon;
     }
 }

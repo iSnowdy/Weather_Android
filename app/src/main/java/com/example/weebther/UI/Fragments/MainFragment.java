@@ -41,7 +41,9 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class MainFragment extends Fragment {
@@ -100,8 +102,9 @@ public class MainFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d("MainFragment", "Search query: " + query);
-                searchCity(query);
+                String formattedQuery = formatCityName(query);
+                Log.d("MainFragment", "Search query: " + query + " | Formatted: " + formattedQuery);
+                searchCity(formattedQuery);
                 return true;
             }
 
@@ -231,5 +234,31 @@ public class MainFragment extends Fragment {
                 Log.e("PlacePicker", "Error: " + status.getStatusMessage());
             }
         }
+    }
+
+    // Formats to city name to capitalize every word except articles
+    // I assume articles are words composed of 1 to 3 characters
+    private String formatCityName(String input) {
+        if (input == null || input.trim().isEmpty()) return "";
+
+        // Removes all blank spaces in between and at the start/end of the word and splits it
+        String[] words = input.trim().toLowerCase().split("\\s+");
+        StringBuilder formattedName = new StringBuilder();
+
+        for (int i = 0; i < words.length; i++) {
+            // Consider words of 1-3 characters as articles (except first word)
+            if (words[i].length() <= 3 && i > 0) {
+                formattedName.append(words[i]); // Keep in lowercase
+            } else {
+                formattedName.append(Character.toUpperCase(words[i].charAt(0)))
+                        .append(words[i].substring(1));
+            }
+
+            if (i < words.length - 1) {
+                formattedName.append(" ");
+            }
+        }
+
+        return formattedName.toString();
     }
 }
